@@ -1,26 +1,52 @@
-@import "tailwindcss";
+*{box-sizing:border-box}
+html,body{margin:0;background:#F6EEE2;color:#2B2B2B;font-family:var(--font-sans),Jost,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{overflow-x:clip}
+a{color:#5A1520;text-decoration:none}
+a:hover{color:#B08A4E}
+button{font-family:inherit;cursor:pointer}
+input,select{font-family:inherit}
+::selection{background:#5A1520;color:#F6EEE2}
+input[type=range]{accent-color:#5A1520}
+p,h1,h2,h3{text-wrap:pretty}
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* Buttons */
+.cta{display:flex;align-items:center;gap:12px;height:50px;padding:0 26px;border:0;font:500 12px var(--font-sans),sans-serif;letter-spacing:.2em;width:max-content;transition:gap .25s,background .3s,color .3s,transform .35s cubic-bezier(.2,.7,.1,1)}
+.cta:hover{gap:18px}
+.cta-light{background:#FBF7F0;color:#5A1520}.cta-light:hover{background:#D9C293;color:#5A1520}
+.cta-dark{background:#5A1520;color:#FBF7F0}.cta-dark:hover{background:#7A2A36;color:#FBF7F0}
+.cta-ghost{background:transparent;color:#5A1520;border:1px solid #D9C293}.cta-ghost:hover{background:#FBF7F0;color:#5A1520}
+.cta-ghost-light{background:transparent;color:#FBF7F0;border:1px solid rgba(251,247,240,.7)}.cta-ghost-light:hover{background:#FBF7F0;color:#5A1520}
+.link-line{display:flex;align-items:center;gap:12px;font:500 12px var(--font-sans),sans-serif;letter-spacing:.22em;color:#5A1520;width:max-content;padding:12px 0;border:0;border-bottom:1px solid #D9C293;background:none;transition:gap .25s}
+.link-line:hover{gap:20px}
+.link-line.on-dark{color:#FBF7F0;border-bottom-color:rgba(217,194,147,.6)}
+.circle-btn{width:52px;height:52px;border-radius:50%;border:1px solid rgba(217,194,147,.6);background:transparent;color:#FBF7F0;font-size:18px;transition:background .3s,color .3s}
+.circle-btn:hover{background:#FBF7F0;color:#5A1520}
+.pill-sub{height:46px;padding:0 22px;border-radius:999px;border:1px solid #D9C293;background:transparent;color:#FBF7F0;font:500 11px var(--font-sans),sans-serif;letter-spacing:.22em;display:flex;align-items:center;gap:10px;transition:background .3s,color .3s,gap .25s}
+.pill-sub:hover{background:#D9C293;color:#2A080D;gap:16px}
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* Product cards */
+.card-media{position:relative;aspect-ratio:4/5;overflow:hidden;background:#EADFCF;cursor:pointer}
+.card-alt{position:absolute;inset:0;opacity:0;transform:scale(1.08);transition:opacity .55s ease,transform 1.4s cubic-bezier(.2,.7,.1,1)}
+.card-media:hover .card-alt{opacity:1;transform:scale(1)}
+.quick-add{position:absolute;left:12px;right:12px;bottom:12px;height:48px;background:#FBF7F0;color:#5A1520;border:0;font:500 11.5px var(--font-sans),sans-serif;letter-spacing:.2em;transition:background .3s,color .3s}
+.quick-add:hover{background:#5A1520;color:#FBF7F0}
+.zoom-target{transition:transform 1.2s cubic-bezier(.2,.7,.1,1)}
+.zoom-host:hover .zoom-target{transform:scale(1.07)}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* Misc hovers */
+.menu-item{transition:color .3s}.menu-item:hover{color:#D9C293}
+.chip{transition:background .3s}.chip:hover{background:#F6EEE2}
+.slide-x{transition:transform .3s}.slide-x:hover{transform:translateX(4px)}
+.foot-link{display:flex;align-items:center;gap:0;background:none;border:0;padding:3px 0;color:#F1E7D8;font:300 15px var(--font-sans),sans-serif;text-align:left;transition:gap .3s,color .3s}
+.foot-link .bar{display:block;width:0;height:1px;background:#D9C293;transition:width .3s}
+.foot-link:hover{gap:10px;color:#D9C293}.foot-link:hover .bar{width:14px}
+.social{width:44px;height:44px;border:1px solid rgba(217,194,147,.45);border-radius:50%;display:flex;align-items:center;justify-content:center;font:500 10px var(--font-sans),sans-serif;letter-spacing:.06em;color:#F1E7D8;transition:background .3s,color .3s,transform .3s}
+.social:hover{background:#D9C293;color:#2A080D;transform:translateY(-3px)}
+.badge-core{transition:transform .4s}.badge-btn:hover .badge-core{transform:scale(1.15) rotate(-45deg)}
+.grow{transition:transform .3s}.grow:hover{transform:scale(1.08)}
+.lift{transition:transform .4s cubic-bezier(.2,.7,.1,1)}.lift:hover{transform:translateY(-6px)}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media (max-width:900px){
+  .stack-md{grid-template-columns:1fr !important}
+  .hide-md{display:none !important}
 }
