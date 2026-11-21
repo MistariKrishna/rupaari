@@ -1,69 +1,31 @@
-# Rupaari — Next.js + TypeScript
+# RUPAARI: draft 2 (davaris-style showcase)
 
-Production port of the **Rupaari Website v7** design: a home page with motion-led storytelling, a filterable sarees listing, and product detail pages, plus a bag, search, and menu.
+Next.js (App Router) + TypeScript + Tailwind CSS. No animation libraries: everything is CSS and a few small hooks.
+Colours, fonts and rules come from the RUPAARI Design System 01.0 (Trajan Pro / Cinzel headings, Montserrat body,
+no bold display type, Burgundy / Wine / Gold / Ivory / Taupe / Soft Black).
 
 ## Run
 
 ```bash
 npm install
-npm run dev        # http://localhost:3000
-npm run build && npm start
+npm run dev          # http://localhost:3000
 npm run typecheck
+npm run build && npm start
 ```
+Use a NEW empty folder. Fonts are fetched by `next/font/google` on first run, so it needs internet.
 
-Requires Node 18.18+ (Node 20 LTS recommended).
+## What is animated
+- Hero: line-by-line headline reveal, staggered fade-up, background parallax, scroll cue.
+- Everything below: `Reveal` (fade-up / scale / side / clip) on scroll, with stagger delays.
+- Key figures count up when visible (`Counter`).
+- Header: transparent over the hero, solid after scroll, hides on scroll down and returns on scroll up.
+- Full-screen menu: circular clip-path reveal with staggered links; page scroll is locked; Esc closes.
+- Cards zoom on hover; link arrows slide; route changes fade in (`template.tsx`).
+- `prefers-reduced-motion` turns all of it off. Without JavaScript everything is simply visible.
 
-## Stack
-
-- **Next.js 15 (App Router)**, **React 19**, **TypeScript (strict)**
-- No UI or animation libraries. Motion uses a small `requestAnimationFrame` hook (`hooks/useRaf.ts`), the Web Animations API, and CSS transitions.
-- Fonts load via `next/font/google`: Cormorant Garamond (serif), Jost (sans), and Allura (script).
-
-## Routes
-
-| Route | File |
-| --- | --- |
-| `/` | `app/page.tsx` → `components/home/*` |
-| `/sarees` (`?weave=…`, `?occ=…`) | `app/sarees/page.tsx` → `components/shop/CollectionView.tsx` |
-| `/sarees/[slug]` | `app/sarees/[slug]/page.tsx` → `components/shop/ProductView.tsx` (statically generated) |
-
-## Structure
-
-```
-app/                 layout (fonts, providers), routes, globals.css (hover states + a few responsive rules)
-components/site/     SiteProvider (bag, wishlist, toast, page-wipe navigation), Header, Menu, Search,
-                     BagDrawer, Footer, Loader, Cursor, ScrollProgress, LivePopup, FloatingButtons, Toast
-components/home/     Hero, Story, Marquee, Craft, Memory, Collections, Featured, NewArrivals, Journey, Why
-components/shop/     CollectionView, ProductView
-components/ui/       Reveal (scroll-in), Parallax, ProductCard, Eyebrow
-lib/data.ts          products, slides, chapters, craft steps, copy — the single source of content
-lib/theme.ts         colour + font tokens, easing curves
-public/assets/       images + logo
-```
-
-## Motion inventory
-
-- **Loader:** the logo scales in while a gold line fills.
-- **Page wipe:** a maroon curtain plays between routes (`navigate()` in `SiteProvider`).
-- **Hero:** a 3D arch carousel with autoplay, a progress bar, pause, arrow keys, swipe, and mouse tilt. It also has gold sparkles on a canvas that move away from the cursor, an animated silk ribbon (SVG), a rotating badge, and a blurred background that cross-fades.
-- **Our Story:** pinned, with 4 chapters driven by scroll, a gold thread that draws itself, a photo frame that changes shape, and a chapter progress bar.
-- **Marquee:** two counter-scrolling rows that speed up and skew with scroll velocity.
-- **Our Craft:** pinned, with 6 steps that scroll sideways, a loom-thread background that fills in, a day counter from 01 to 42, and a moving shuttle on the progress bar.
-- **Memory:** the headline fills with ink on scroll, and two columns of testimonial cards scroll endlessly.
-- **Collections:** expanding panels with an autoplay timer; hover takes control.
-- **Featured:** a magnifying lens that follows the cursor and drifts on its own when idle.
-- **New Arrivals:** an endless, draggable strip with 3D tilt and a silk shine.
-- **Journey:** "STORIES" filled with a photo that pans on scroll, and journal cards that fan out.
-- **Why Rupaari:** tiles that flip in sequence, and a rotating seal.
-- **Footer:** the RUPAARI letters rise with a gold shimmer, plus a live Kanchipuram clock with a loom status message.
-- **Global:** a gold cursor ring (on mouse and trackpad devices only), magnetic CTAs (`data-mag`), a reading progress bar, a header that hides on scroll, and a fly-to-bag animation.
-
-When the visitor has `prefers-reduced-motion` set, ambient motion drops to about 25% speed. Slide-up and lift effects become simple fades, and the page wipe, fly-to-bag animation, parallax, tilt and magnetic pull are switched off.
-
-## Before going live
-
-- **Images:** `public/assets/img-*.png` are crops from the low-resolution mock. Replace them with the real photography and consider moving to `next/image`.
-- **Data:** content lives in `lib/data.ts`. Swap it for your CMS or commerce API, such as Shopify Storefront or Medusa.
-- **Live popup:** `LIVE` in `lib/data.ts` is demo social proof. Wire it to real orders or remove `<LivePopup />` from `SiteChrome`.
-- **Bag and wishlist:** both persist to `localStorage` only. Checkout, account, search indexing, and newsletter submission are stubs that show a toast.
-- **Copy:** the story chapters 02–04, the craft step text, the testimonials, and the promise text are drafts.
+## Replace the stand-ins
+- Photos / videos: every image slot is the `Media` component. Put files in `public/images` or `public/videos` and pass
+  `image="/images/x.jpg"` or `video="/videos/x.mp4"` (muted, looping, autoplay). Until then it shows animated woven art in brand colours.
+- Copy and numbers: `src/lib/content.ts` (figures, collections, process steps are SAMPLE: verify or remove).
+- Contact details and social links: `src/lib/site.ts` (empty values are hidden).
+- Shop button target: `site.shopHref`.
