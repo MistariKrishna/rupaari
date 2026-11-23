@@ -14,7 +14,7 @@ type Status = { kind: "added" } | { kind: "removed"; id: string } | null;
 export default function WishlistClient() {
   const { wish, toggleWish, add, openBag } = useStore();
   const [status, setStatus] = useState<Status>(null);
-  const timer = useRef<number>();
+  const timer = useRef<number | undefined>(undefined);
   const items = wish.map((id) => getProduct(id)).filter((p): p is Product => Boolean(p));
 
   useEffect(() => () => window.clearTimeout(timer.current), []);

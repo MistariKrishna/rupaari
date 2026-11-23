@@ -17,6 +17,13 @@ export interface ProductImage {
   alt: string;
   primary: boolean;
 }
+/** Another colour of the same piece: same details and price, its own pictures and stock switch. */
+export interface ProductVariant {
+  id: string;
+  name: string;
+  images: ProductImage[];
+  soldOut: boolean;
+}
 export interface AdminProduct {
   id: string;
   slug: string;
@@ -46,6 +53,12 @@ export interface AdminProduct {
   sku: string;
   colourName: string;
   colourHex: string;
+  /** the first colour (named above, pictures in Media) is out of stock */
+  colourSoldOut?: boolean;
+  /** more colours of the same piece */
+  variants?: ProductVariant[];
+  /** whole product marked out of stock, whatever the inventory says */
+  soldOut?: boolean;
   mrp: number | "";
   price: number;
   gstRate: number;
@@ -85,6 +98,8 @@ export interface AdminCollection {
   story: string;
   tone: Tone;
   heroImage: string;
+  /** which kind of product it holds (default sarees) */
+  category?: CategorySlug;
   active: boolean;
   seoTitle: string;
   seoDescription: string;

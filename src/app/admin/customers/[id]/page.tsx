@@ -7,6 +7,7 @@ import { Btn, Card, Empty, PageHeader, StatusBadge, Toggle, money } from "@/comp
 import { useAdmin } from "@/components/admin/AdminShell";
 import { customerBlank, deriveCustomers } from "@/lib/admin/customers";
 import { statusOf, itemCount } from "@/lib/admin/orders";
+import type { CustMeta } from "@/lib/admin/types";
 import { fmtShort, fmtTime } from "@/lib/orders";
 
 export default function CustomerProfile() {
@@ -19,7 +20,7 @@ export default function CustomerProfile() {
 
   if (!c) return <Empty title="Customer not found" action={<Btn href="/admin/customers" variant="ghost">Back to customers</Btn>} />;
 
-  const saveMeta = (fn: (m: typeof c.meta) => typeof c.meta) =>
+  const saveMeta = (fn: (m: CustMeta) => CustMeta) =>
     set("custMeta", (prev) => (prev.some((m) => m.id === c.id) ? prev.map((m) => (m.id === c.id ? fn(m) : m)) : [...prev, fn(c.meta)]));
   const setConsent = (k: "email" | "sms" | "whatsapp", v: boolean) => {
     saveMeta((m) => ({ ...m, consent: { ...m.consent, [k]: v, at: new Date().toISOString() } }));
