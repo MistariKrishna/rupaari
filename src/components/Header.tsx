@@ -4,8 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type FocusEvent as ReactFocusEvent, type PointerEvent as ReactPointerEvent } from "react";
 import { images } from "@/lib/images";
-import { categoryLabel, money, products, weaveLabel } from "@/lib/products";
-import { nav } from "@/lib/site";
+import { useCatalog } from "@/lib/catalog";
+import { categoryLabel, money, weaveLabel } from "@/lib/products";
+import { nav, isAuthPath } from "@/lib/site";
 import { Icon } from "./Icon";
 import Media from "./Media";
 import Logo from "./Logo";
@@ -89,7 +90,7 @@ export default function Header() {
     }
   };
 
-  const active: Key | null = pathname.startsWith("/collections/kurtis") ? "kurtis" : pathname.startsWith("/collections") ? "sarees" : pathname === "/about" || pathname === "/craft" ? "about" : null;
+  const active: Key | null = pathname.startsWith("/collections/kurtis") ? "kurtis" : pathname.startsWith("/occasions") ? "occasions" : pathname.startsWith("/collections") ? "sarees" : pathname === "/about" || pathname === "/craft" ? "about" : null;
 
   const hover = (k: Key) => ({
     onPointerEnter: (e: ReactPointerEvent) => {
@@ -127,13 +128,14 @@ export default function Header() {
     </button>
   );
 
+  const catalog = useCatalog();
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return [];
-    return products
+    return catalog
       .filter((p) => `${p.name} ${weaveLabel(p.weave) ?? ""} ${categoryLabel(p.category)} ${p.fabric}`.toLowerCase().includes(q))
       .slice(0, 6);
-  }, [query]);
+  }, [query, catalog]);
 
   const logo = <Logo />;
 
@@ -144,6 +146,8 @@ export default function Header() {
   };
 
   const bagLabel = `Bag, ${count} ${count === 1 ? "item" : "items"}`;
+
+  if (isAuthPath(pathname)) return null;
 
   return (
     <header data-header data-over={(heroMode || mobile) && !search} className="site-header" onKeyDown={onKeyDown}>
@@ -156,7 +160,7 @@ export default function Header() {
               <button
                 ref={heroBurger}
                 type="button"
-                className="util justify-self-start !gap-3"
+                className="util justify-self-start"
                 aria-expanded={mobile}
                 aria-controls="mobile-menu"
                 onClick={() => {
@@ -164,17 +168,18 @@ export default function Header() {
                   setMobile((v) => !v);
                 }}
               >
-                <Icon name={mobile ? "close" : "menu"} className="!h-5 !w-5" />
+                <Icon name={mobile ? "close" : "menu"} />
                 {mobile ? "Close" : "Menu"}
               </button>
               {logo}
               <div className="flex items-center gap-8 justify-self-end">
-                <button ref={heroSearch} type="button" className="util !gap-2" aria-expanded={search} aria-controls="site-search" onClick={toggleSearch}>
-                  <Icon name="search" className="!h-4 !w-4" />
+                <button ref={heroSearch} type="button" className="util" aria-expanded={search} aria-controls="site-search" onClick={toggleSearch}>
+                  <Icon name="search" />
                   Search
                 </button>
-                <Link href="/account" className="util">Account</Link>
-                <button type="button" className="util" aria-label={bagLabel} onClick={openBag}>
+                <Link href="/account" className="util" aria-current={pathname.startsWith("/account") ? "page" : undefined}><Icon name="user" />Account</Link>
+                <button type="button" className="util" aria-label={bagLabel} aria-current={pathname === "/bag" ? "page" : undefined} onClick={openBag}>
+                  <Icon name="bag" />
                   Bag ({count})
                 </button>
               </div>
@@ -245,14 +250,45 @@ export default function Header() {
                 </div>
               </li>
 
-              <li className="relative flex items-center" {...hover("kurtis")}>
+              <li className="flex items-center" {...hover("kurtis")}>
                 {trigger("kurtis", nav.kurtis.label)}
-                <div id="dd-kurtis" className="dd dd-sm" data-open={open === "kurtis"}>
-                  <ul className="dd-list">
-                    {nav.kurtis.links.map((l) => (
-                      <li key={l.label}><Link href={l.href} className="dd-link">{l.label}</Link></li>
-                    ))}
-                  </ul>
+                <div id="dd-kurtis" className="dd dd-mega" data-open={open === "kurtis"}>
+                  <div className="mega mega--kurti">
+                    <div>
+                      <p className="dd-label">Discover</p>
+                      <ul className="dd-list">
+                        {nav.kurtis.discover.map((l) => (
+                          <li key={l.label}><Link href={l.href} className="dd-link">{l.label}</Link></li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <p className="dd-label">Style</p>
+                      <ul className="dd-list">
+                        {nav.kurtis.style.map((l) => (
+                          <li key={l.label}><Link href={l.href} className="dd-link">{l.label}</Link></li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <p className="dd-label">Sleeve & Neck</p>
+                      <ul className="dd-list">
+                        {nav.kurtis.sleeveNeck.map((l) => (
+                          <li key={l.label}><Link href={l.href} className="dd-link">{l.label}</Link></li>
+                        ))}
+                      </ul>
+                    </div>
+                    <Link href={nav.kurtis.feature.href} className="mega-card group" data-cursor="Shop">
+                      <div className="zoom overflow-hidden">
+                        <Media tone="wine" className="aspect-[4/3] w-full" sizes="420px" {...images.nav.kurti} />
+                      </div>
+                      <span className="mt-4 flex items-center justify-between gap-4">
+                        <span className="font-display text-[1.05rem] uppercase tracking-[.05em] text-wine">{nav.kurtis.feature.title}</span>
+                        <Icon name="arrow-right" className="!h-5 !w-5 flex-none text-burgundy transition-transform duration-300 group-hover:translate-x-1" />
+                      </span>
+                      <span className="mt-1.5 block text-[14px] text-ink/75">{nav.kurtis.feature.line}</span>
+                    </Link>
+                  </div>
                 </div>
               </li>
             </ul>
@@ -262,14 +298,16 @@ export default function Header() {
 
           <div className="flex items-center gap-7 justify-self-end">
             <button ref={searchBtn} type="button" className="util" aria-expanded={search} aria-controls="site-search" onClick={toggleSearch}>
+              <Icon name="search" />
               Search
             </button>
-            <Link href="/account" className="util">Account</Link>
-            <Link href="/wishlist" className="util relative !px-1" aria-label={`Wishlist, ${wish.length} saved`}>
-              <Icon name="heart" className="!h-[22px] !w-[22px]" />
+            <Link href="/account" className="util" aria-current={pathname.startsWith("/account") ? "page" : undefined}><Icon name="user" />Account</Link>
+            <Link href="/wishlist" className="util relative" aria-label={`Wishlist, ${wish.length} saved`}>
+              <Icon name="heart" />
               {wish.length > 0 && <span className="absolute right-0 top-2 h-2 w-2 rounded-full bg-burgundy" aria-hidden="true" />}
             </Link>
-            <button type="button" className="util" aria-label={bagLabel} onClick={openBag}>
+            <button type="button" className="util" aria-label={bagLabel} aria-current={pathname === "/bag" ? "page" : undefined} onClick={openBag}>
+              <Icon name="bag" />
               Bag ({count})
             </button>
           </div>

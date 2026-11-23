@@ -1,14 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Cinzel, Cormorant_Garamond, Montserrat } from "next/font/google";
 import "./globals.css";
-import MobileNav from "@/components/MobileNav";
-import SiteFooter from "@/components/SiteFooter";
-import BagDrawer from "@/components/BagDrawer";
-import Header from "@/components/Header";
 import { StoreProvider } from "@/components/StoreProvider";
-import PageTransition from "@/components/PageTransition";
-import Preloader from "@/components/Preloader";
-import SmoothScroll from "@/components/SmoothScroll";
+import FaviconSync from "@/components/FaviconSync";
+import StoreChrome from "@/components/StoreChrome";
 
 // Cinzel is the design system's designated fallback for Trajan Pro (licensed).
 const cinzel = Cinzel({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-cinzel", display: "swap" });
@@ -51,15 +46,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="#main" className="absolute left-[-999px] top-0 z-[100] bg-burgundy px-4 py-3 text-ivory focus:left-0">
           Skip to content
         </a>
-        <Preloader />
-        <PageTransition />
-        <SmoothScroll />
+        <FaviconSync />
         <StoreProvider>
-          <Header />
-          <main id="main">{children}</main>
-          <SiteFooter />
-          <MobileNav />
-          <BagDrawer />
+          <StoreChrome>{children}</StoreChrome>
         </StoreProvider>
       </body>
     </html>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { isAuthPath } from "@/lib/site";
 import { Icon, type IconName } from "./Icon";
 import { useStore } from "./StoreProvider";
 
@@ -15,6 +16,8 @@ export default function MobileNav() {
     { name: "heart", label: "Wishlist", href: "/wishlist", current: pathname.startsWith("/wishlist") },
     { name: "user", label: "Account", href: "/account", current: pathname.startsWith("/account") },
   ];
+
+  if (isAuthPath(pathname)) return null;
 
   return (
     <nav className="bnav" aria-label="Quick navigation">

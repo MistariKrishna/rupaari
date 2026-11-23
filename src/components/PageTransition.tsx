@@ -13,6 +13,7 @@ export default function PageTransition() {
   const [state, setState] = useState<"idle" | "in" | "out">("idle");
   const busy = useRef(false);
   const pending = useRef(false);
+  const target = useRef("/");
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
@@ -25,13 +26,13 @@ export default function PageTransition() {
       if (url.pathname === window.location.pathname) return; // hash / same-page links behave normally
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-      e.preventDefault();
-      e.stopPropagation();
-      if (busy.current) return;
+      e.preventDefault(); // the link's own onClick (closing the bag or menu) still runs
+      target.current = url.pathname + url.search + url.hash;
+      if (busy.current) return; // already on its way: the latest click decides where it lands
       busy.current = true;
       pending.current = true;
       setState("in");
-      setTimeout(() => router.push(url.pathname + url.search + url.hash), 800);
+      setTimeout(() => router.push(target.current), 450);
       // Failsafe if navigation never completes.
       setTimeout(() => {
         if (pending.current) {

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import NewsletterForm from "./NewsletterForm";
+import Reveal from "./Reveal";
 
 const cols = [
   { title: "Shop", links: [["All Sarees", "/collections/sarees"], ["New Arrivals", "/collections/sarees?sort=new"], ["Bridal Edit", "/collections/sarees?occasion=wedding"], ["Shop by Weave", "/collections"]] },
@@ -11,7 +12,7 @@ const cols = [
 export default function CollectionsFooter() {
   return (
     <footer className="cf">
-      <div className="cf-top">
+      <Reveal className="cf-top">
         <div className="cf-news">
           <p className="cf-h">A new chapter, in silk.</p>
           <p className="cf-p">Notes on new sarees, enduring craft and the world of RUPAARI.</p>
@@ -28,16 +29,16 @@ export default function CollectionsFooter() {
             </nav>
           ))}
         </div>
-      </div>
+      </Reveal>
       <div className="cf-rule" />
-      <div className="cf-legal">
+      <Reveal className="cf-legal" delay={120}>
         <p>© 2026 RUPAARI. All rights reserved.</p>
         <p className="cf-pol">
           <Link href="/contact">Privacy Policy</Link>
           <Link href="/contact">Terms &amp; Conditions</Link>
         </p>
-        <p>India · INR ₹</p>
-      </div>
+        {/* <p>India · INR ₹</p> */}
+      </Reveal>
     </footer>
   );
 }

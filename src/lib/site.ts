@@ -24,7 +24,7 @@ export const menu = [
     children: [
       { label: "Sarees", href: "/collections/sarees" },
       { label: "Kurtis", href: "/collections/kurtis" },
-      { label: "Gifting", href: "/collections/gift-craft" },
+      { label: "Gift Craft", href: "/collections/gift-craft" },
     ],
   },
   {
@@ -69,21 +69,57 @@ export const nav = {
   kurtis: {
     label: "Kurtis",
     href: "/collections/kurtis",
-    links: [
+    discover: [
       { label: "All Kurtis", href: "/collections/kurtis" },
       { label: "New Arrivals", href: "/collections/kurtis?sort=new" },
-      { label: "View All Collections", href: "/collections" },
+      { label: "Pure Cotton Wear", href: "/collections/kurtis?wear=pure-cotton" },
+      { label: "Silk Wear", href: "/collections/kurtis?wear=silk" },
+      { label: "Daily & Casual Wear", href: "/collections/kurtis?wear=daily-casual" },
+      { label: "Professional Wear", href: "/collections/kurtis?wear=professional" },
+      { label: "Party Wear", href: "/collections/kurtis?wear=party" },
+      { label: "Festive Wear", href: "/collections/kurtis?wear=festive" },
+      { label: "Traditional & Cultural Wear", href: "/collections/kurtis?wear=traditional" },
+      { label: "Seasonal Collection", href: "/collections/kurtis?wear=seasonal" },
     ],
+    style: [
+      { label: "Anarkali Kurti", href: "/collections/kurtis?style=anarkali" },
+      { label: "A-Line Kurti", href: "/collections/kurtis?style=a-line" },
+      { label: "Straight Cut Kurti", href: "/collections/kurtis?style=straight" },
+      { label: "Kaftan Kurti", href: "/collections/kurtis?style=kaftan" },
+      { label: "Peplum Kurti", href: "/collections/kurtis?style=peplum" },
+      { label: "Chikankari Kurti", href: "/collections/kurtis?style=chikankari" },
+      { label: "Jacket Or Cape Kurti", href: "/collections/kurtis?style=jacket-cape" },
+      { label: "Corset - Style Kurti", href: "/collections/kurtis?style=corset" },
+      { label: "Tunic - Style Kurti", href: "/collections/kurtis?style=tunic" },
+      { label: "Angrakha Anarkali Kurti", href: "/collections/kurtis?style=angrakha-anarkali" },
+    ],
+    sleeveNeck: [
+      { label: "Three-Quarter Sleeves", href: "/collections/kurtis?sleeve=three-quarter" },
+      { label: "Long Sleeves", href: "/collections/kurtis?sleeve=long" },
+      { label: "Sleeveless", href: "/collections/kurtis?sleeve=sleeveless" },
+      { label: "Flared Sleeves", href: "/collections/kurtis?sleeve=flared" },
+      { label: "V-Neck", href: "/collections/kurtis?neck=v" },
+      { label: "Sweetheart Neck", href: "/collections/kurtis?neck=sweetheart" },
+      { label: "Round Neck", href: "/collections/kurtis?neck=round" },
+      { label: "Mandarin Collar", href: "/collections/kurtis?neck=mandarin" },
+      { label: "Scoop Neck", href: "/collections/kurtis?neck=scoop" },
+      { label: "High Neck", href: "/collections/kurtis?neck=high" },
+    ],
+    feature: {
+      title: "The Banarasi Silk Kurti Edit",
+      line: "Silks for a new chapter, chosen with care.",
+      href: "/collections/kurtis?sort=new",
+    },
   },
   occasions: {
     label: "Occasions",
-    href: "/collections/sarees",
+    href: "/occasions",
     links: [
       { label: "Wedding", href: "/collections/sarees?occasion=wedding" },
       { label: "Festive", href: "/collections/sarees?occasion=festive" },
       { label: "Office & Celebration", href: "/collections/sarees?occasion=office" },
-      { label: "Gifting", href: "/collections/gift-craft" },
-      { label: "View All Occasions", href: "/collections/sarees" },
+      { label: "Gifting", href: "/collections/sarees?occasion=gifting" },
+      { label: "View All Occasions", href: "/occasions" },
     ],
   },
   about: {
@@ -100,3 +136,7 @@ export const nav = {
     ],
   },
 };
+
+/** Sign-in pages are standalone screens: no header, footer or bottom nav. */
+export const AUTH_PATHS = ["/login", "/signup", "/forgot-password"];
+export const isAuthPath = (path: string) => AUTH_PATHS.some((p) => path === p || path.startsWith(p + "/"));

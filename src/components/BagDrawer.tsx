@@ -1,17 +1,25 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { productSlot } from "@/lib/images";
 import { getProduct, money } from "@/lib/products";
 import { Icon } from "./Icon";
 import Media from "./Media";
-import { useStore } from "./StoreProvider";
+import { lineKey, useStore } from "./StoreProvider";
 
 /** Slide-in shopping bag. Opens automatically when something is added. */
 export default function BagDrawer() {
   const { bagOpen, closeBag, lines, subtotal, count, setQty, remove } = useStore();
   const closeRef = useRef<HTMLButtonElement>(null);
+  const pathname = usePathname();
+
+  // Any navigation (including the animated page transition) closes the drawer.
+  useEffect(() => {
+    closeBag();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   useEffect(() => {
     if (!bagOpen) return;
@@ -55,26 +63,28 @@ export default function BagDrawer() {
                 const p = getProduct(l.id);
                 if (!p) return null;
                 return (
-                  <li key={l.id} className="grid grid-cols-[88px_1fr] gap-4 border-b border-gold/25 py-5">
+                  <li key={lineKey(l)} className="grid grid-cols-[88px_1fr] gap-4 border-b border-gold/25 py-5">
                     <Link href={`/product/${p.id}`} onClick={closeBag} tabIndex={bagOpen ? 0 : -1} aria-label={p.name}>
-                      <Media tone={p.tone} className="aspect-[4/5] w-full" {...productSlot(p)} sizes="88px" />
+                      <Media tone={p.tone} className="aspect-[4/5] w-full" {...productSlot(p, l.colour)} sizes="88px" />
                     </Link>
                     <div className="min-w-0">
                       <Link href={`/product/${p.id}`} onClick={closeBag} tabIndex={bagOpen ? 0 : -1} className="font-display text-[1rem] uppercase leading-tight text-wine">
                         {p.name}
                       </Link>
                       <p className="mt-1 text-[14px] text-ink/80">{money(p.price)}</p>
+                      {l.colour && <p className="mt-1 text-[13px] text-ink/70">Colour: {l.colour}</p>}
+                      {l.size && <p className="mt-1 text-[13px] text-ink/70">Size: {l.size}</p>}
                       <div className="mt-3 flex items-center justify-between">
                         <div className="inline-flex items-center border border-taupe">
-                          <button type="button" aria-label={`Decrease quantity of ${p.name}`} tabIndex={bagOpen ? 0 : -1} className="flex h-10 w-10 items-center justify-center hover:bg-wine/5" onClick={() => setQty(l.id, l.qty - 1)}>
+                          <button type="button" aria-label={`Decrease quantity of ${p.name}`} tabIndex={bagOpen ? 0 : -1} className="flex h-10 w-10 items-center justify-center hover:bg-wine/5" onClick={() => setQty(l.id, l.qty - 1, l.size, l.colour)}>
                             <Icon name="minus" className="!h-4 !w-4" />
                           </button>
                           <span className="min-w-8 text-center text-[14px]" aria-live="polite">{l.qty}</span>
-                          <button type="button" aria-label={`Increase quantity of ${p.name}`} tabIndex={bagOpen ? 0 : -1} className="flex h-10 w-10 items-center justify-center hover:bg-wine/5" onClick={() => setQty(l.id, l.qty + 1)}>
+                          <button type="button" aria-label={`Increase quantity of ${p.name}`} tabIndex={bagOpen ? 0 : -1} className="flex h-10 w-10 items-center justify-center hover:bg-wine/5" onClick={() => setQty(l.id, l.qty + 1, l.size, l.colour)}>
                             <Icon name="plus" className="!h-4 !w-4" />
                           </button>
                         </div>
-                        <button type="button" tabIndex={bagOpen ? 0 : -1} className="text-[12px] uppercase tracking-[.14em] text-burgundy underline underline-offset-4" onClick={() => remove(l.id)}>
+                        <button type="button" tabIndex={bagOpen ? 0 : -1} className="text-[12px] uppercase tracking-[.14em] text-burgundy underline underline-offset-4" onClick={() => remove(l.id, l.size, l.colour)}>
                           Remove
                         </button>
                       </div>
@@ -89,11 +99,8 @@ export default function BagDrawer() {
                 <span className="text-[12px] font-medium uppercase tracking-[.16em]">Subtotal</span>
                 <span className="font-display text-[1.4rem] text-wine">{money(subtotal)}</span>
               </div>
-              {/* Payments are connected in the next phase; keep this honest until then. */}
-              <button type="button" disabled aria-disabled="true" className="btn w-full cursor-not-allowed opacity-60">
-                Checkout
-              </button>
-              <p className="mt-3 text-[13px] text-ink/70">Online checkout switches on when payments are connected. Your bag is saved on this device.</p>
+              <Link href="/checkout" onClick={closeBag} tabIndex={bagOpen ? 0 : -1} className="btn w-full">Checkout</Link>
+              <Link href="/bag" onClick={closeBag} tabIndex={bagOpen ? 0 : -1} className="mt-4 block text-center text-[12px] uppercase tracking-[.16em] text-burgundy underline underline-offset-8">View bag</Link>
               <button type="button" onClick={closeBag} tabIndex={bagOpen ? 0 : -1} className="mt-4 text-[12px] uppercase tracking-[.16em] text-burgundy underline underline-offset-8">
                 Continue shopping
               </button>

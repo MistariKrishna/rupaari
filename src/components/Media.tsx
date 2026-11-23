@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import type { Tone } from "@/lib/content";
+import { useSlot } from "@/lib/siteContent";
 
 interface Props {
   /** woven-art colour tone, used when no image/video is supplied (or the file is missing) */
@@ -23,7 +24,9 @@ interface Props {
  * If a video or photo file is missing or fails to load, it falls back automatically
  * (video, then poster photo, then woven art) so a missing file never shows a broken image.
  */
-export default function Media({ tone = "wine", image, video, poster, alt = "", sizes = "100vw", priority = false, className = "" }: Props) {
+export default function Media({ tone = "wine", image: imageProp, video: videoProp, poster: posterProp, alt: altProp, sizes = "100vw", priority = false, className = "" }: Props) {
+  // Picks up replacements made in the admin (Site content); otherwise the built-in files are used.
+  const { image, video, poster, alt = "" } = useSlot({ image: imageProp, video: videoProp, poster: posterProp, alt: altProp });
   const [videoFailed, setVideoFailed] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
 
@@ -38,7 +41,7 @@ export default function Media({ tone = "wine", image, video, poster, alt = "", s
   if (src && !imageFailed) {
     return (
       <div className={`relative overflow-hidden ${className}`.trim()}>
-        <Image src={src} alt={alt} fill sizes={sizes} priority={priority} className="kb object-cover" onError={() => setImageFailed(true)} />
+        <Image src={src} alt={alt} fill sizes={sizes} priority={priority} unoptimized={src.startsWith("http") || src.startsWith("data:")} className="kb object-cover" onError={() => setImageFailed(true)} />
       </div>
     );
   }

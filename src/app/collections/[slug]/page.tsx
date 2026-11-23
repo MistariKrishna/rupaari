@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import CollectionBanner, { type Crumb } from "@/components/CollectionBanner";
 import CollectionGrid from "@/components/CollectionGrid";
-import { categories, collections, getCollection, productsIn } from "@/lib/products";
+import { categories, collections, getCollection, productsIn, type CategorySlug } from "@/lib/products";
 
 type Params = Promise<{ slug: string }>;
 
@@ -15,12 +15,12 @@ function resolve(slug: string) {
   const category = categories.find((c) => c.slug === slug);
   if (category) {
     const crumbs: Crumb[] = [{ label: "Home", href: "/" }, { label: category.label }];
-    return { title: category.label, line: category.blurb, tone: category.tone, crumbs, items: productsIn(category.slug), showWeaves: category.slug === "sarees", defaultWeaves: [] as string[] };
+    return { title: category.label, line: category.blurb, tone: category.tone, crumbs, items: productsIn(category.slug), category: category.slug as CategorySlug, showWeaves: category.slug === "sarees", defaultWeaves: [] as string[] };
   }
   const col = getCollection(slug);
   if (col) {
     const crumbs: Crumb[] = [{ label: "Home", href: "/" }, { label: "Sarees", href: "/collections/sarees" }, { label: col.name }];
-    return { title: col.name, line: col.line, tone: col.tone, crumbs, items: productsIn("sarees"), showWeaves: true, defaultWeaves: col.weaves as string[] };
+    return { title: col.name, line: col.line, tone: col.tone, crumbs, items: productsIn("sarees"), category: "sarees" as CategorySlug, showWeaves: true, defaultWeaves: col.weaves as string[] };
   }
   return null;
 }
@@ -39,7 +39,7 @@ export default async function CollectionPage({ params }: { params: Params }) {
     <div className="cp-page">
       <CollectionBanner crumbs={r.crumbs} title={r.title} line={r.line} tone={r.tone} />
       <Suspense fallback={<p className="py-24 text-center text-ink/60">Loading pieces…</p>}>
-        <CollectionGrid items={r.items} showWeaves={r.showWeaves} defaultWeaves={r.defaultWeaves} />
+        <CollectionGrid items={r.items} category={r.category} showWeaves={r.showWeaves} defaultWeaves={r.defaultWeaves} />
       </Suspense>
     </div>
   );

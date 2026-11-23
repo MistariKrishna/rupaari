@@ -2,7 +2,7 @@
 // 1. Put files in /public using the exact names below (see IMAGE_GUIDE.md for sizes + prompts).
 // 2. Flip USE_PHOTOS (and USE_VIDEOS) to true. Until then the animated woven art shows.
 
-import type { Product } from "./products";
+import { imageOf, type Product } from "./products";
 
 export const USE_PHOTOS = true;
 export const USE_VIDEOS = true;
@@ -18,15 +18,22 @@ const p = (image: string, alt = ""): Slot => (USE_PHOTOS ? { image, alt } : {});
 const v = (video: string, poster: string, alt = ""): Slot =>
   USE_VIDEOS ? { video, poster } : USE_PHOTOS ? { image: poster, alt } : {};
 
-/** Product photo slot: public/images/products/<product-id>.jpg */
-export const productSlot = (product: Pick<Product, "id" | "name">): Slot => p(`/images/products/${product.id}.jpg`, product.name);
+/** Product photo slot: the picture uploaded in the admin (otherwise the woven placeholder). */
+export const productSlot = (product: Pick<Product, "id" | "name"> & { image?: string; colours?: Product["colours"] }, colour?: string): Slot => {
+  const pick = colour ? product.colours?.find((c) => c.name === colour)?.image : undefined; // the chosen colour's picture
+  const own = pick ?? product.image ?? imageOf(product.id); // pictures added in the admin
+  return own ? { image: own, alt: product.name } : {}; // no stock photos: pictures come from the admin
+};
 
 export const images = {
   /** Home hero: 16:9 (video 1920x1080, poster still 2560x1440) */
   hero: v("/videos/hero2.mp4", "Silk saree with gold zari border"),
 
   /** Header "Sarees" menu feature card (The Bridal Edit): 3:2 (1200x800) */
-  nav: { bridal: p("/images/nav-bridal-edit.jpg", "The Bridal Edit") },
+  nav: {
+    bridal: p("/images/nav-bridal-edit.jpg", "The Bridal Edit"),
+    kurti: p("/images/nav-kurti-edit.jpg", "The Banarasi Silk Kurti Edit"),
+  },
 
   /** Home category cards: 2:3 (1600x2400), keyed by category slug */
   collections: {
@@ -53,6 +60,14 @@ export const images = {
     gifting: p("/images/occasion-gifting.jpg", "A saree prepared as a gift"),
   } as Record<string, Slot>,
 
+  /** /occasions cards: 3:2 (1320x880). Reuses the home occasion photos until dedicated wide ones are added. */
+  occasionCards: {
+    wedding: p("/images/occasion-wedding.jpg", "Wedding silk saree"),
+    festive: p("/images/occasion-festive.jpg", "Festive silk saree"),
+    office: p("/images/occasion-office.jpg", "Light handloom saree"),
+    gifting: p("/images/occasion-gifting.jpg", "A saree prepared as a gift"),
+  } as Record<string, Slot>,
+
   /** Collections pages: banner 2560x642 (burgundy overlay is added in code) */
   collectionBanner: p("/images/collections-banner.jpeg"),
 
@@ -65,6 +80,13 @@ export const images = {
     pochampally: p("/images/collection-pochampally.png", "Pochampally Ikat"),
     uppada: p("/images/collection-uppada.png", "Uppada and Venkatagiri"),
   } as Record<string, Slot>,
+
+  /** Sign in / sign up / reset password panel: portrait 4:5 (1200x1500), a burgundy overlay is added in code */
+  auth: [
+    { ...p("/images/auth-1.jpg", "Kanchipuram silk in warm light"), kicker: "The Kanchipuram Edit", line: "Woven in gold, kept for generations." },
+    { ...p("/images/auth-2.jpg", "Silk saree border"), kicker: "The Mysore Edit", line: "Soft silk, made for long days." },
+    { ...p("/images/auth-3.jpg", "Zari detail"), kicker: "The Bridal Edit", line: "Chosen with care, for a new chapter." },
+  ] as (Slot & { kicker: string; line: string })[],
 
   /** Home closing consultation banner: 16:9 (2560x1440) */
   cta: p("/images/cta.jpg"),

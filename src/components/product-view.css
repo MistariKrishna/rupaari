@@ -1,0 +1,87 @@
+/* Product page: gallery, buy box, tabs, craft card */
+.pv-top { display: grid; gap: 40px; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: start; }
+@media (max-width: 1023px) { .pv-top { grid-template-columns: minmax(0, 1fr); gap: 28px; } }
+
+.pv-gal { display: grid; gap: 14px; }
+.pv-gal.has-thumbs { grid-template-columns: 92px minmax(0, 1fr); }
+@media (max-width: 640px) { .pv-gal.has-thumbs { grid-template-columns: minmax(0, 1fr); } .pv-gal.has-thumbs .pv-thumbs { order: 2; flex-direction: row; overflow-x: auto; } .pv-gal.has-thumbs .pv-thumbs li { flex: 0 0 76px; } }
+.pv-thumbs { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.pv-thumb { display: grid; gap: 6px; width: 100%; text-align: center; }
+.pv-thumb-img { display: block; aspect-ratio: 4 / 5; overflow: hidden; border: 1px solid #d9cdbb; background: #efe6d6; transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s; }
+.pv-thumb:hover .pv-thumb-img { border-color: #680f1a; transform: translateY(-2px); }
+.pv-thumb[data-on="true"] .pv-thumb-img { border-color: #680f1a; box-shadow: 0 0 0 1px #680f1a; }
+.pv-thumb-l { font-size: 11px; color: #4d4745; line-height: 1.25; }
+.pv-thumb[data-on="true"] .pv-thumb-l { color: #680f1a; }
+.pv-main { min-width: 0; }
+.pv-frame { position: relative; overflow: hidden; background: #efe6d6; border: 1px solid #e3d8c6; }
+.pv-fade { animation: pvFade 0.45s ease both; }
+@keyframes pvFade { from { opacity: 0; transform: scale(1.015); } to { opacity: 1; transform: none; } }
+.pv-count { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 10px; font-size: 12px; color: #4d4745; letter-spacing: 0.04em; }
+.pv-zoom { display: inline-flex; align-items: center; gap: 6px; color: #680f1a; text-decoration: underline; text-underline-offset: 4px; }
+
+.pv-info { min-width: 0; }
+@media (min-width: 1024px) { .pv-info { position: sticky; top: 7rem; } }
+.pv-eyebrow { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #4d4745; margin: 0 0 14px; }
+.pv-title { font-family: var(--font-cinzel), serif; font-weight: 400; font-size: clamp(1.7rem, 3vw, 2.5rem); line-height: 1.15; letter-spacing: 0.05em; text-transform: uppercase; color: #4a0b13; margin: 0; }
+.pv-line { margin: 14px 0 0; color: #3a3534; font-size: 15px; }
+.pv-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin: 18px 0 0; }
+.pv-price span { font-family: var(--font-cinzel), serif; font-size: 1.5rem; color: #4a0b13; }
+.pv-price s { color: #8a817b; }
+.pv-price em { font-style: normal; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #680f1a; }
+.pv-tax { margin: 2px 0 0; font-size: 12px; color: #6b625d; }
+
+.pv-buy { margin-top: 22px; display: grid; gap: 12px; }
+.pv-buy .sz { margin: 0 0 6px; }
+.pv-buy .sz-b { min-width: 44px; height: 40px; font-size: 13px; }
+.pv-row { display: grid; grid-template-columns: minmax(0, 1fr) 48px; gap: 10px; }
+.pv-row .icon-btn { height: 100%; min-height: 48px; border-radius: 2px; }
+.pv-cta { width: 100%; justify-content: center; min-height: 48px; letter-spacing: 0.16em; }
+.pv-cta:disabled { opacity: 0.5; cursor: not-allowed; }
+.pv-stock { margin: 0; font-size: 12px; color: #4d4745; }
+.pv-pin { margin-top: 10px; padding-top: 18px; border-top: 1px solid #e3d8c6; }
+.pv-pin-l { display: block; font-size: 12px; color: #4d4745; margin-bottom: 8px; }
+.pv-pin-f { display: flex; align-items: center; gap: 10px; border: 1px solid #bba99a; padding: 0 0 0 12px; background: #fffdf9; transition: border-color 0.25s, box-shadow 0.25s; }
+.pv-pin-f:focus-within { border-color: #680f1a; box-shadow: 0 0 0 3px rgba(104, 15, 26, 0.08); }
+.pv-pin-f input { flex: 1; min-width: 0; height: 46px; border: 0; background: none; outline: 0; font: inherit; font-size: 14px; }
+.pv-pin-f button { padding: 0 18px; height: 46px; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #680f1a; border-left: 1px solid #e3d8c6; transition: background-color 0.25s; }
+.pv-pin-f button:hover { background: rgba(104, 15, 26, 0.06); }
+.pv-pin-m { margin: 8px 0 0; font-size: 13px; color: #1f6b3a; } .pv-pin-m.is-bad { color: #9b1c1c; }
+.pv-notes { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; font-size: 13px; color: #3a3534; }
+.pv-notes li { display: flex; gap: 10px; align-items: flex-start; } .pv-notes .icon { flex: none; color: #680f1a; margin-top: 1px; }
+
+.pv-more-info { border-top: 1px solid #e3d8c6; padding: 40px 0 56px; }
+.pv-lower { display: grid; gap: 32px; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: start; }
+@media (max-width: 1023px) { .pv-lower { grid-template-columns: minmax(0, 1fr); } }
+.pv-tab-bar { display: flex; gap: 22px; overflow-x: auto; border-bottom: 1px solid #e3d8c6; scrollbar-width: none; }
+.pv-tab-bar button { position: relative; padding: 12px 0; font-size: 12px; letter-spacing: 0.04em; color: #4d4745; white-space: nowrap; transition: color 0.25s; }
+.pv-tab-bar button::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: #680f1a; transform: scaleX(0); transform-origin: left; transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+.pv-tab-bar button:hover { color: #680f1a; }
+.pv-tab-bar button[aria-selected="true"] { color: #680f1a; font-weight: 500; } .pv-tab-bar button[aria-selected="true"]::after { transform: scaleX(1); }
+.pv-panel { padding-top: 20px; animation: pvFade 0.35s ease both; font-size: 14px; color: #3a3534; }
+.pv-intro { margin: 0 0 16px; max-width: 60ch; }
+.pv-panel dl { margin: 0; } .pv-panel dl > div { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: 16px; padding: 10px 0; border-bottom: 1px solid #efe6d6; }
+.pv-panel dt { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6b625d; } .pv-panel dd { margin: 0; }
+@media (max-width: 560px) { .pv-panel dl > div { grid-template-columns: 1fr; gap: 2px; } }
+
+.pv-craft { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 22px; padding: 22px; border: 1px solid #d9cdbb; background: #fbf6ec; }
+@media (max-width: 560px) { .pv-craft { grid-template-columns: minmax(0, 1fr); } .pv-craft-img { aspect-ratio: 16 / 10; } }
+.pv-craft-img { overflow: hidden; border: 1px solid #e3d8c6; background: #efe6d6; aspect-ratio: 1 / 1; }
+.pv-craft-e { margin: 0 0 6px; font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase; color: #4d4745; }
+.pv-craft-t { margin: 0; font-family: var(--font-cinzel), serif; font-weight: 400; font-size: 1.15rem; line-height: 1.25; letter-spacing: 0.06em; text-transform: uppercase; color: #680f1a; }
+.pv-craft-p { margin: 10px 0 0; font-size: 13px; color: #3a3534; }
+.pv-craft-l { margin-top: 14px; display: inline-flex; font-size: 12px; }
+.pv-rel-h { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; margin-bottom: 36px; }
+
+.pv-lb { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: 24px; background: rgba(28, 12, 14, 0.88); animation: pvFade 0.25s ease both; }
+.pv-lb img { max-width: min(92vw, 900px); max-height: 90vh; object-fit: contain; }
+.pv-lb-x, .pv-lb-n { position: absolute; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; color: #f7f1e7; border: 1px solid rgba(247, 241, 231, 0.5); transition: background-color 0.25s, color 0.25s; }
+.pv-lb-x:hover, .pv-lb-n:hover { background: #f7f1e7; color: #4a0b13; }
+.pv-lb-x { top: 18px; right: 18px; } .pv-lb-n { top: 50%; margin-top: -22px; } .pv-lb-p { left: 18px; } .pv-lb-nx { right: 18px; }
+@media (prefers-reduced-motion: reduce) { .pv-fade, .pv-panel, .pv-lb { animation: none; } }
+
+/* colour options */
+.pv-cols-l { margin: 0 0 10px; font-size: 13px; letter-spacing: 0.04em; color: rgba(28, 26, 26, 0.7); }
+.pv-cols-l b { font-weight: 500; color: #4a0b13; }
+.pv-buy .pv-col-b { min-width: 0; padding-inline: 16px; }
+.pv-buy .pv-col-b[data-out="true"] { border-color: #bba99a; color: #8f8379; text-decoration: line-through; }
+.pv-buy .pv-col-b[data-out="true"][data-on="true"] { background: #8f8379; border-color: #8f8379; color: #f7f1e7; }

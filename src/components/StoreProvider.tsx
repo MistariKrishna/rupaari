@@ -1,12 +1,20 @@
 "use client";
 
+import "@/lib/catalog";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { getProduct } from "@/lib/products";
+import { getProduct, hasSizes } from "@/lib/products";
 
 interface Line {
   id: string;
   qty: number;
+  /** kurtis only */
+  size?: string;
+  /** colour name, for pieces sold in more than one colour */
+  colour?: string;
 }
+
+/** Same saree in the bag twice is one line; the same kurti in two sizes is two lines. */
+export const lineKey = (l: { id: string; size?: string; colour?: string }) => `${l.id}|${l.size ?? ""}|${l.colour ?? ""}`;
 
 interface Store {
   lines: Line[];
@@ -16,11 +24,15 @@ interface Store {
   bagOpen: boolean;
   openBag: () => void;
   closeBag: () => void;
-  add: (id: string, qty?: number) => void;
-  setQty: (id: string, qty: number) => void;
-  remove: (id: string) => void;
+  add: (id: string, qty?: number, openDrawer?: boolean, size?: string, colour?: string) => void;
+  setQty: (id: string, qty: number, size?: string, colour?: string) => void;
+  remove: (id: string, size?: string, colour?: string) => void;
   toggleWish: (id: string) => void;
   isWished: (id: string) => boolean;
+  /** empty the bag (after an order is placed) */
+  clear: () => void;
+  /** true once the saved bag has been read from this device */
+  ready: boolean;
 }
 
 const BAG_KEY = "rupaari2_bag";
@@ -60,21 +72,25 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }
   }, [lines, wish, loaded]);
 
-  const add = useCallback((id: string, qty = 1) => {
-    if (!getProduct(id)) return;
+  const add = useCallback((id: string, qty = 1, openDrawer = true, size?: string, colour?: string) => {
+    const p = getProduct(id);
+    if (!p) return;
+    if (hasSizes(p) && !size) return; // a kurti needs a size
+    const key = lineKey({ id, size, colour });
     setLines((cur) => {
-      const found = cur.find((l) => l.id === id);
-      if (found) return cur.map((l) => (l.id === id ? { ...l, qty: Math.min(10, l.qty + qty) } : l));
-      return [...cur, { id, qty }];
+      if (cur.some((l) => lineKey(l) === key)) return cur.map((l) => (lineKey(l) === key ? { ...l, qty: Math.min(10, l.qty + qty) } : l));
+      return [...cur, { id, qty, ...(size ? { size } : {}), ...(colour ? { colour } : {}) }];
     });
-    setBagOpen(true);
+    if (openDrawer) setBagOpen(true);
   }, []);
 
-  const setQty = useCallback((id: string, qty: number) => {
-    setLines((cur) => (qty <= 0 ? cur.filter((l) => l.id !== id) : cur.map((l) => (l.id === id ? { ...l, qty: Math.min(10, qty) } : l))));
+  const setQty = useCallback((id: string, qty: number, size?: string, colour?: string) => {
+    const key = lineKey({ id, size, colour });
+    setLines((cur) => (qty <= 0 ? cur.filter((l) => lineKey(l) !== key) : cur.map((l) => (lineKey(l) === key ? { ...l, qty: Math.min(10, qty) } : l))));
   }, []);
 
-  const remove = useCallback((id: string) => setLines((cur) => cur.filter((l) => l.id !== id)), []);
+  const clear = useCallback(() => setLines([]), []);
+  const remove = useCallback((id: string, size?: string, colour?: string) => setLines((cur) => cur.filter((l) => lineKey(l) !== lineKey({ id, size, colour }))), []);
   const toggleWish = useCallback((id: string) => setWish((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id])), []);
 
   const value = useMemo<Store>(() => {
@@ -93,8 +109,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       remove,
       toggleWish,
       isWished: (id) => wish.includes(id),
+      clear,
+      ready: loaded,
     };
-  }, [lines, wish, bagOpen, add, setQty, remove, toggleWish]);
+  }, [lines, wish, bagOpen, loaded, add, setQty, remove, toggleWish, clear]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

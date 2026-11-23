@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, type CSSProperties } from "react";
 import { heroSlides } from "@/lib/content";
 import { images } from "@/lib/images";
+import { TEXT_DEFAULTS, useHydrated, useSlot, useText } from "@/lib/siteContent";
 import { Icon } from "./Icon";
 import Media from "./Media";
 import SplitText from "./SplitText";
@@ -18,16 +19,24 @@ const SHOW_COPY = true;
  */
 export default function Hero() {
   const [failed, setFailed] = useState(false);
-  const slot = images.hero;
-  const copy = heroSlides[0];
-  const hasVideo = Boolean(slot.video) && !failed;
+  const slot = useSlot(images.hero);
+  const base = heroSlides[0];
+  const copy = {
+    eyebrow: useText("hero.eyebrow", TEXT_DEFAULTS["hero.eyebrow"]),
+    title: useText("hero.title", TEXT_DEFAULTS["hero.title"]),
+    line: useText("hero.line", TEXT_DEFAULTS["hero.line"]),
+    cta: { label: useText("hero.cta", base.cta.label), href: useText("hero.href", base.cta.href) },
+  };
+  // Wait until the browser has read the admin changes before loading any hero file, so the old asset never flashes.
+  const ready = useHydrated();
+  const hasVideo = ready && Boolean(slot.video) && !failed;
 
   return (
     <section className="hero hero-pull" aria-label="Introduction">
       {hasVideo ? (
         <video className="absolute inset-0 h-full w-full object-cover object-[72%_center] lg:object-center" src={slot.video} poster={slot.poster} autoPlay muted loop playsInline preload="auto" aria-hidden="true" onError={() => setFailed(true)} />
       ) : (
-        <Media tone="wine" className="absolute inset-0 h-full w-full" priority {...slot} />
+        <Media tone="wine" className="absolute inset-0 h-full w-full" priority {...(ready ? slot : {})} />
       )}
 
 

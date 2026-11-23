@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { productSlot } from "@/lib/images";
-import { categoryLabel, discountPct, money, weaveLabel, type Product } from "@/lib/products";
+import { categoryLabel, discountPct, hasSizes, money, weaveLabel, type Product } from "@/lib/products";
 import Media from "./Media";
 import { useStore } from "./StoreProvider";
 import WishlistButton from "./WishlistButton";
 
 /** Product tile: image, badge, wishlist heart, quick add, name and price. */
+/** Centres the hover bar label (a link needs this; letter-spacing adds trailing space, hence the left padding). */
+const QUICK = { display: "grid", placeItems: "center", textAlign: "center", textDecoration: "none", lineHeight: 1, paddingLeft: "0.16em", whiteSpace: "nowrap" } as const;
+
 export default function ProductCard({ product, priority = false, detailed = false }: { product: Product; priority?: boolean; detailed?: boolean }) {
   const { add } = useStore();
   const pct = discountPct(product);
@@ -21,9 +24,13 @@ export default function ProductCard({ product, priority = false, detailed = fals
         </Link>
         {product.badge && <span className="badge pointer-events-none absolute left-3 top-3">{product.badge}</span>}
         <WishlistButton id={product.id} name={product.name} className="pc-heart" />
-        <button type="button" className="pc-quick" onClick={() => add(product.id)}>
-          Quick add
-        </button>
+        {hasSizes(product) ? (
+          <Link href={`/product/${product.id}`} className="pc-quick" style={QUICK}>Select size</Link>
+        ) : (
+          <button type="button" className="pc-quick" style={QUICK} onClick={() => add(product.id)}>
+            Quick add
+          </button>
+        )}
       </div>
       {detailed && <p className="pc-tag mt-4">{weaveLabel(product.weave) ?? categoryLabel(product.category)}</p>}
       <h3 className={`${detailed ? "mt-1.5" : "mt-4"} pc-name font-display text-[1rem] uppercase leading-snug tracking-[.04em] md:text-[1.05rem]`}>
