@@ -7,15 +7,15 @@ import { colourway, getGift, setGift } from "@/lib/orders";
 import { getProduct, money } from "@/lib/products";
 import Crumbs from "./Crumbs";
 import { Icon } from "./Icon";
+import CouponBox from "./CouponBox";
+import { useCoupon } from "@/lib/coupons";
 import Media from "./Media";
 import { lineKey, useStore } from "./StoreProvider";
 
 export default function BagPage() {
   const { lines, count, subtotal, setQty, remove, ready } = useStore();
   const [gift, setGiftState] = useState({ on: false, message: "" });
-  const [coupon, setCoupon] = useState(false);
-  const [code, setCode] = useState("");
-  const [couponMsg, setCouponMsg] = useState("");
+  const { discount, freeShip } = useCoupon(subtotal);
 
   useEffect(() => setGiftState(getGift()), []);
   const updateGift = (g: { on: boolean; message: string }) => {
@@ -91,25 +91,11 @@ export default function BagPage() {
               <h2 className="rp-h2">Order Summary</h2>
               <dl className="rp-rows">
                 <div><dt>Subtotal ({count} {count === 1 ? "item" : "items"})</dt><dd>{money(subtotal)}</dd></div>
-                <div><dt>Shipping</dt><dd>At checkout</dd></div>
+                {discount > 0 && <div className="bd-save"><dt>Offer discount</dt><dd>− {money(discount)}</dd></div>}
+                <div><dt>Shipping</dt><dd>{freeShip ? "Free" : "At checkout"}</dd></div>
+                {discount > 0 && <div className="rp-bold"><dt>Estimated total</dt><dd>{money(subtotal - discount)}</dd></div>}
               </dl>
-              <div className="bg-coupon">
-                <button type="button" aria-expanded={coupon} onClick={() => setCoupon((v) => !v)}>
-                  Apply a coupon <Icon name={coupon ? "minus" : "plus"} />
-                </button>
-                {coupon && (
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      setCouponMsg(code.trim() ? "This code isn't valid." : "Enter a coupon code.");
-                    }}
-                  >
-                    <input aria-label="Coupon code" value={code} onChange={(e) => { setCode(e.target.value); setCouponMsg(""); }} placeholder="Coupon code" />
-                    <button type="submit">Apply</button>
-                    {couponMsg && <p role="status">{couponMsg}</p>}
-                  </form>
-                )}
-              </div>
+              <CouponBox subtotal={subtotal} />
               <Link href="/checkout" className="btn w-full" aria-disabled={lines.length === 0}>Proceed to checkout</Link>
               <Link href="/contact" className="rp-link bg-ship">Shipping &amp; returns</Link>
             </aside>

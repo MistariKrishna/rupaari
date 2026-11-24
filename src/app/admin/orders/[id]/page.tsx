@@ -95,6 +95,7 @@ export default function OrderDetail() {
             <dl className="adm-kv" style={{ marginTop: 14 }}>
               <div><dt>Subtotal</dt><dd>{money(o.subtotal)}</dd></div>
               <div><dt>Shipping</dt><dd>{money(o.shipping)}</dd></div>
+              {o.discount ? <div><dt>Offer discount{o.coupon ? ` (${o.coupon})` : ""}</dt><dd>− {money(o.discount)}</dd></div> : null}
               <div className="is-total"><dt>Total</dt><dd>{money(o.total)}</dd></div>
             </dl>
           </Card>

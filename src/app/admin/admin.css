@@ -596,3 +596,8 @@ label.adm-btn { cursor: pointer; }
 .adm-slot-none { display: grid; justify-items: center; gap: 4px; color: var(--tp); } .adm-slot-none small { font-size: 11.5px; }
 .adm-slot-flag.is-off { background: rgba(255, 255, 255, 0.9); color: var(--mut); }
 .adm-slot-sz { color: var(--tp) !important; }
+
+/* CLICK RELIABILITY: controls never move under the pointer. A button that lifts or shrinks on hover/press can slip out
+   from under the cursor mid-click, so the click is lost. Hover and press feedback stays as colour, shadow and shine only. */
+.adm :is(.adm-btn, .adm-chip, .adm-pg, .adm-ibtn, .adm-roleb, .adm-slot, .adm-stat, .adm-ni, .adm-av, .adm-back, .adm-img, .adm-drop, .adm-tab, .adm-pop button, .adm-tbl-row):is(:hover, :active, :focus-visible) { transform: none !important; }
+.adm :is(.adm-slot, .adm-stat):hover { box-shadow: var(--sh2); }

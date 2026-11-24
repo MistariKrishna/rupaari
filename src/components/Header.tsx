@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type FocusEvent as ReactFocusEvent, type PointerEvent as ReactPointerEvent } from "react";
 import { images } from "@/lib/images";
 import { useCatalog } from "@/lib/catalog";
@@ -14,9 +14,11 @@ import MenuOverlay from "./MenuOverlay";
 import { useStore } from "./StoreProvider";
 
 type Key = "sarees" | "kurtis" | "occasions" | "about";
+const PAGE: Record<Key, string> = { sarees: "/collections/sarees", kurtis: "/collections/kurtis", occasions: "/occasions", about: "/about" };
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const { count, wish, openBag } = useStore();
   const [open, setOpen] = useState<Key | null>(null); // desktop disclosure (only one at a time)
   const [mobile, setMobile] = useState(false);
@@ -119,8 +121,10 @@ export default function Header() {
       aria-expanded={open === k}
       aria-controls={`dd-${k}`}
       onClick={() => {
+        // hover still opens the dropdown; clicking the name opens that page
         setSearch(false);
-        setOpen(open === k ? null : k);
+        setOpen(null);
+        router.push(PAGE[k]);
       }}
     >
       {label}

@@ -4,8 +4,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Wine curtain that sweeps up over the page on every internal link click,
- * navigates underneath it, then lifts away to reveal the new page.
+ * Wine curtain that sweeps up over the page when a link to the home page is clicked (for example the logo),
+ * navigates underneath it, then lifts away to reveal the home page. Every other link opens its page directly.
  */
 export default function PageTransition() {
   const router = useRouter();
@@ -24,6 +24,7 @@ export default function PageTransition() {
       const url = new URL(a.href, window.location.href);
       if (url.origin !== window.location.origin) return;
       if (url.pathname === window.location.pathname) return; // hash / same-page links behave normally
+      if (url.pathname !== "/") return; // the loading screen is only for going to the home page; every other page opens straight away
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
       e.preventDefault(); // the link's own onClick (closing the bag or menu) still runs

@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import CouponBox from "./CouponBox";
+import { consumeCoupon, useCoupon } from "@/lib/coupons";
 import { DEMO, checkPin, indiaOnly, sendCode, shippingFor, startPayment, verifyCode } from "@/lib/checkout";
 import { COUNTRIES, guessCountry } from "@/lib/countries";
 import { emptyIdent, identValue, idNoun, maskId, type Ident } from "@/lib/identity";
@@ -65,8 +67,9 @@ export default function CheckoutClient() {
 
   const india = indiaOnly(addr.country);
   const pin = checkPin(addr.country, addr.pin);
-  const shipping = pin === "ok" ? shippingFor(addr.country) : null;
-  const total = subtotal + (shipping ?? 0);
+  const { code: couponCode, discount, freeShip } = useCoupon(subtotal);
+  const shipping = pin === "ok" ? (freeShip && indiaOnly(addr.country) ? 0 : shippingFor(addr.country)) : null;
+  const total = subtotal - discount + (shipping ?? 0);
   const addrValid = addr.name.trim() && addr.line1.trim() && addr.city.trim() && addr.state.trim() && addr.country && pin === "ok";
   const id = identValue(ident);
 
@@ -125,12 +128,14 @@ export default function CheckoutClient() {
       contact,
       payment: pay,
       subtotal,
-      shipping: shippingFor(addr.country),
+      shipping: freeShip && indiaOnly(addr.country) ? 0 : shippingFor(addr.country),
       total,
+      ...(discount > 0 ? { discount, coupon: couponCode } : {}),
       gift: gift.on ? gift.message || "Gift wrap requested" : undefined,
     };
     if (saveAddr) saveAddress(addr);
     add(order);
+    if (couponCode && (discount > 0 || freeShip)) consumeCoupon(couponCode);
     clear();
     router.push(`/order-confirmation?order=${order.id}`);
   };
@@ -332,11 +337,13 @@ export default function CheckoutClient() {
                 </li>
               ))}
             </ul>
+            <CouponBox subtotal={subtotal} />
             <dl className="rp-rows rp-rows--lg">
               <div className="rp-bold"><dt>Subtotal</dt><dd>{money(subtotal)}</dd></div>
+              {discount > 0 && <div className="bd-save"><dt>Offer discount ({couponCode})</dt><dd>− {money(discount)}</dd></div>}
               <div>
                 <dt>Shipping</dt>
-                <dd>{shipping !== null ? money(shipping) : pin === "unavailable" ? "Unavailable for this address" : "After address entry"}</dd>
+                <dd>{shipping === 0 ? "Free" : shipping !== null ? money(shipping) : pin === "unavailable" ? "Unavailable for this address" : "After address entry"}</dd>
               </div>
               {shipping !== null && <div className="rp-bold rp-total"><dt>{payLabel}</dt><dd>{money(total)}</dd></div>}
             </dl>

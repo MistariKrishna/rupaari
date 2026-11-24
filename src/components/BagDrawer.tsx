@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import { productSlot } from "@/lib/images";
 import { getProduct, money } from "@/lib/products";
+import { useShopInfo } from "@/lib/catalog";
 import { Icon } from "./Icon";
+import CouponBox from "./CouponBox";
+import { useCoupon } from "@/lib/coupons";
 import Media from "./Media";
 import { lineKey, useStore } from "./StoreProvider";
 
@@ -14,6 +17,12 @@ export default function BagDrawer() {
   const { bagOpen, closeBag, lines, subtotal, count, setQty, remove } = useStore();
   const closeRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
+  const shop = useShopInfo();
+  const { discount, freeShip } = useCoupon(subtotal);
+  const tab = bagOpen ? 0 : -1;
+  const goal = shop.freeShipFrom;
+  const left = Math.max(0, goal - (subtotal - discount));
+  const pct = goal > 0 ? Math.min(100, Math.round(((subtotal - discount) / goal) * 100)) : 0;
 
   // Any navigation (including the animated page transition) closes the drawer.
   useEffect(() => {
@@ -40,71 +49,117 @@ export default function BagDrawer() {
   return (
     <div className="drawer" data-open={bagOpen} aria-hidden={!bagOpen}>
       <div className="drawer-scrim" onClick={closeBag} />
-      <aside className="drawer-panel" role="dialog" aria-modal="true" aria-label="Shopping bag">
-        <div className="flex items-center justify-between border-b border-gold/40 px-6 py-5">
-          <h2 className="font-display text-[1.15rem] uppercase tracking-[.08em] text-wine">Your bag ({count})</h2>
-          <button ref={closeRef} type="button" onClick={closeBag} aria-label="Close bag" tabIndex={bagOpen ? 0 : -1} className="flex h-11 w-11 items-center justify-center text-wine">
+      <aside className="drawer-panel bd" role="dialog" aria-modal="true" aria-label="Shopping bag">
+        <header className="bd-head">
+          <h2>
+            Your bag <span className="bd-count">{count}</span>
+          </h2>
+          <button ref={closeRef} type="button" onClick={closeBag} aria-label="Close bag" tabIndex={tab} className="bd-close">
             <Icon name="close" />
           </button>
-        </div>
+        </header>
 
         {lines.length === 0 ? (
-          <div className="flex flex-1 flex-col items-start justify-center gap-5 px-6">
-            <p className="font-display text-[1.5rem] uppercase text-wine">Your bag is empty</p>
-            <p className="text-ink/75">Find a saree you love and it will wait for you here.</p>
-            <Link href="/collections/sarees" onClick={closeBag} tabIndex={bagOpen ? 0 : -1} className="btn">
-              Shop sarees <Icon name="arrow-right" />
+          <div className="bd-empty">
+            <span className="bd-bag" aria-hidden="true"><Icon name="bag" /></span>
+            <p className="bd-etitle">Your next chapter awaits</p>
+            <p className="bd-etext">Your bag is empty. Explore silk sarees chosen for moments worth remembering.</p>
+            <Link href="/collections/sarees" onClick={closeBag} tabIndex={tab} className="btn bd-cta">
+              Explore sarees
             </Link>
           </div>
         ) : (
           <>
-            <ul className="m-0 flex-1 list-none overflow-y-auto p-0 px-6" data-native-scroll>
-              {lines.map((l) => {
+            {goal > 0 && (
+              <div className="bd-ship" data-done={left === 0 || freeShip}>
+                <p>
+                  {left === 0 || freeShip ? (
+                    <>
+                      <Icon name="truck" className="!h-4 !w-4" /> You&apos;ve unlocked free delivery
+                    </>
+                  ) : (
+                    <>
+                      Add <b>{money(left)}</b> more for free delivery
+                    </>
+                  )}
+                </p>
+                <span className="bd-bar" aria-hidden="true">
+                  <i style={{ width: `${left === 0 || freeShip ? 100 : pct}%` }} />
+                </span>
+              </div>
+            )}
+
+            <ul className="bd-list" data-native-scroll>
+              {lines.map((l, i) => {
                 const p = getProduct(l.id);
                 if (!p) return null;
                 return (
-                  <li key={lineKey(l)} className="grid grid-cols-[88px_1fr] gap-4 border-b border-gold/25 py-5">
-                    <Link href={`/product/${p.id}`} onClick={closeBag} tabIndex={bagOpen ? 0 : -1} aria-label={p.name}>
-                      <Media tone={p.tone} className="aspect-[4/5] w-full" {...productSlot(p, l.colour)} sizes="88px" />
+                  <li key={lineKey(l)} className="bd-item" style={{ "--i": i } as CSSProperties}>
+                    <Link href={`/product/${p.id}`} onClick={closeBag} tabIndex={tab} aria-label={p.name} className="bd-img">
+                      <Media tone={p.tone} className="h-full w-full" {...productSlot(p, l.colour)} sizes="96px" />
                     </Link>
-                    <div className="min-w-0">
-                      <Link href={`/product/${p.id}`} onClick={closeBag} tabIndex={bagOpen ? 0 : -1} className="font-display text-[1rem] uppercase leading-tight text-wine">
+                    <div className="bd-info">
+                      <Link href={`/product/${p.id}`} onClick={closeBag} tabIndex={tab} className="bd-name">
                         {p.name}
                       </Link>
-                      <p className="mt-1 text-[14px] text-ink/80">{money(p.price)}</p>
-                      {l.colour && <p className="mt-1 text-[13px] text-ink/70">Colour: {l.colour}</p>}
-                      {l.size && <p className="mt-1 text-[13px] text-ink/70">Size: {l.size}</p>}
-                      <div className="mt-3 flex items-center justify-between">
-                        <div className="inline-flex items-center border border-taupe">
-                          <button type="button" aria-label={`Decrease quantity of ${p.name}`} tabIndex={bagOpen ? 0 : -1} className="flex h-10 w-10 items-center justify-center hover:bg-wine/5" onClick={() => setQty(l.id, l.qty - 1, l.size, l.colour)}>
+                      <div className="bd-meta">
+                        {l.colour && <span>{l.colour}</span>}
+                        {l.size && <span>Size {l.size}</span>}
+                      </div>
+                      <div className="bd-row">
+                        <div className="bd-qty">
+                          <button type="button" aria-label={`Decrease quantity of ${p.name}`} tabIndex={tab} onClick={() => setQty(l.id, l.qty - 1, l.size, l.colour)}>
                             <Icon name="minus" className="!h-4 !w-4" />
                           </button>
-                          <span className="min-w-8 text-center text-[14px]" aria-live="polite">{l.qty}</span>
-                          <button type="button" aria-label={`Increase quantity of ${p.name}`} tabIndex={bagOpen ? 0 : -1} className="flex h-10 w-10 items-center justify-center hover:bg-wine/5" onClick={() => setQty(l.id, l.qty + 1, l.size, l.colour)}>
+                          <span aria-live="polite">{l.qty}</span>
+                          <button type="button" aria-label={`Increase quantity of ${p.name}`} tabIndex={tab} onClick={() => setQty(l.id, l.qty + 1, l.size, l.colour)}>
                             <Icon name="plus" className="!h-4 !w-4" />
                           </button>
                         </div>
-                        <button type="button" tabIndex={bagOpen ? 0 : -1} className="text-[12px] uppercase tracking-[.14em] text-burgundy underline underline-offset-4" onClick={() => remove(l.id, l.size, l.colour)}>
-                          Remove
-                        </button>
+                        <p className="bd-price">{money(p.price * l.qty)}</p>
                       </div>
+                      <button type="button" tabIndex={tab} className="bd-remove" onClick={() => remove(l.id, l.size, l.colour)}>
+                        Remove
+                      </button>
                     </div>
                   </li>
                 );
               })}
             </ul>
 
-            <div className="border-t border-gold/40 px-6 py-5">
-              <div className="mb-4 flex items-baseline justify-between">
-                <span className="text-[12px] font-medium uppercase tracking-[.16em]">Subtotal</span>
-                <span className="font-display text-[1.4rem] text-wine">{money(subtotal)}</span>
+            <footer className="bd-foot">
+              <CouponBox subtotal={subtotal} tab={tab} />
+              <dl className="bd-sum">
+                <div>
+                  <dt>Subtotal</dt>
+                  <dd>{money(subtotal)}</dd>
+                </div>
+                {discount > 0 && (
+                  <div className="bd-save">
+                    <dt>Offer discount</dt>
+                    <dd>− {money(discount)}</dd>
+                  </div>
+                )}
+                <div>
+                  <dt>Delivery</dt>
+                  <dd>{freeShip ? "Free" : "Calculated at checkout"}</dd>
+                </div>
+                <div className="bd-total">
+                  <dt>Estimated total</dt>
+                  <dd>{money(subtotal - discount)}</dd>
+                </div>
+              </dl>
+              <p className="bd-note">Inclusive of applicable taxes. Final delivery charges shown before payment.</p>
+              <Link href="/checkout" onClick={closeBag} tabIndex={tab} className="btn bd-cta">
+                Proceed to checkout
+              </Link>
+              <div className="bd-links">
+                <button type="button" onClick={closeBag} tabIndex={tab}>
+                  Continue shopping <Icon name="arrow-right" className="!h-3.5 !w-3.5" />
+                </button>
+                <Link href="/bag" onClick={closeBag} tabIndex={tab}>View bag</Link>
               </div>
-              <Link href="/checkout" onClick={closeBag} tabIndex={bagOpen ? 0 : -1} className="btn w-full">Checkout</Link>
-              <Link href="/bag" onClick={closeBag} tabIndex={bagOpen ? 0 : -1} className="mt-4 block text-center text-[12px] uppercase tracking-[.16em] text-burgundy underline underline-offset-8">View bag</Link>
-              <button type="button" onClick={closeBag} tabIndex={bagOpen ? 0 : -1} className="mt-4 text-[12px] uppercase tracking-[.16em] text-burgundy underline underline-offset-8">
-                Continue shopping
-              </button>
-            </div>
+            </footer>
           </>
         )}
       </aside>

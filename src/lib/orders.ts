@@ -54,6 +54,9 @@ export interface Order {
   subtotal: number;
   shipping: number;
   total: number;
+  /** offer taken off the bag, and the code used */
+  discount?: number;
+  coupon?: string;
   gift?: string;
 }
 
