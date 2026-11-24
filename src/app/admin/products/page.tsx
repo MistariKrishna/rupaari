@@ -8,6 +8,7 @@ import { Btn, Field, Modal, PageHeader, StatusBadge, money, productThumb, slugif
 import { useAdmin } from "@/components/admin/AdminShell";
 import { parseCsv } from "@/lib/admin/export";
 import { blankProduct, makeSku } from "@/lib/admin/seed";
+import { demoCatalogue, isDemo } from "@/lib/admin/demo";
 import { availableOf } from "@/lib/admin/stock";
 import type { AdminProduct, ProductStatus } from "@/lib/admin/types";
 import { categories, type CategorySlug } from "@/lib/products";
@@ -16,7 +17,7 @@ import { fmtShort } from "@/lib/orders";
 interface ImportRow { cells: Record<string, string>; error?: string }
 
 export default function Products() {
-  const { d, set, can, log, toast, confirm } = useAdmin();
+  const { d, set, can, why, log, toast, confirm } = useAdmin();
   const q = useQ();
   const term = q.get("q").toLowerCase();
   const [status, cat, col] = [q.get("status"), q.get("category"), q.get("collection")];
@@ -49,6 +50,27 @@ export default function Products() {
     set("stock", (prev) => prev.filter((s) => !ids.includes(s.id)));
     log("Product", `${ids.length} products`, "Deleted");
     toast("Deleted");
+  };
+  const hasDemo = d.products.some((p) => isDemo(p.id));
+  const loadDemo = () => {
+    const { products: dp, stock: ds } = demoCatalogue();
+    const have = new Set(d.products.map((p) => p.id));
+    const add = dp.filter((p) => !have.has(p.id));
+    const addStock = ds.filter((r) => add.some((p) => p.id === r.id));
+    if (!add.length) return toast("The demo products are already loaded");
+    if (!set("products", (prev) => [...add, ...prev])) return toast("Not enough browser storage for the demo products. Delete some large images and try again.", "err");
+    set("stock", (prev) => [...prev, ...addStock]);
+    set("collections", (prev) => prev.map((c) => ({ ...c, products: [...c.products, ...add.filter((p) => p.collection === c.id).map((p) => p.id)] })));
+    log("Product", `${add.length} demo products`, "Loaded demo catalogue");
+    toast(`${add.length} demo products added and live on the store`);
+  };
+  const removeDemo = async () => {
+    if (!(await confirm({ title: "Remove the demo products?", body: "Only the demo products are removed. Your own products stay as they are.", label: "Remove", danger: true }))) return;
+    set("products", (prev) => prev.filter((p) => !isDemo(p.id)));
+    set("stock", (prev) => prev.filter((r) => !isDemo(r.id)));
+    set("collections", (prev) => prev.map((c) => ({ ...c, products: c.products.filter((id) => !isDemo(id)) })));
+    log("Product", "Demo products", "Removed");
+    toast("Demo products removed");
   };
   const duplicate = (p: AdminProduct) => {
     const copy: AdminProduct = { ...p, id: uid("prd"), name: `${p.name} (copy)`, slug: `${p.slug}-copy-${Date.now().toString(36).slice(-3)}`, sku: `${p.sku}-C`, status: "draft", updatedAt: new Date().toISOString() };
@@ -97,12 +119,12 @@ export default function Products() {
     { key: "stock", label: "Available", sort: stockOf, className: "r", csv: stockOf, render: (p) => (stockOf(p) < 0 ? "Made to order" : stockOf(p)) },
     { key: "status", label: "Status", sort: (p) => p.status, render: (p) => <StatusBadge s={p.status} /> },
     { key: "upd", label: "Updated", sort: (p) => p.updatedAt, hideOnMobile: true, csv: (p) => p.updatedAt, render: (p) => fmtShort(p.updatedAt) },
-    { key: "act", label: "", csv: () => "", render: (p) => <Btn size="sm" variant="ghost" icon="copy" onClick={() => duplicate(p)}>Duplicate</Btn> },
+    { key: "act", label: "", csv: () => "", render: (p) => (<div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}><Btn size="sm" variant="ghost" icon="copy" onClick={() => duplicate(p)}>Duplicate</Btn><Btn size="sm" variant="danger" icon="trash" disabled={!can("delete")} title={why("delete")} onClick={() => del([p.id])}>Delete</Btn></div>) },
   ];
 
   return (
     <>
-      <PageHeader title="Products" sub="Everything you sell. Drafts stay off the store until published." actions={<><Btn variant="ghost" icon="upload" onClick={() => setImp(true)}>Import CSV</Btn><Btn href="/admin/products/new" icon="plus">New product</Btn></>} />
+      <PageHeader title="Products" sub="Everything you sell. Drafts stay off the store until published." actions={<>{hasDemo ? <Btn variant="ghost" icon="trash" onClick={removeDemo}>Remove demo products</Btn> : <Btn variant="ghost" icon="plus" onClick={loadDemo}>Load demo catalogue</Btn>}<Btn variant="ghost" icon="upload" onClick={() => setImp(true)}>Import CSV</Btn><Btn href="/admin/products/new" icon="plus">New product</Btn></>} />
       <Toolbar placeholder="Search title or SKU">
         <FilterSelect param="status" label="All statuses" options={[{ value: "live", label: "Live" }, { value: "draft", label: "Draft" }, { value: "archived", label: "Archived" }]} />
         <FilterSelect param="category" label="All categories" options={categories.map((c) => ({ value: c.slug, label: c.label }))} />

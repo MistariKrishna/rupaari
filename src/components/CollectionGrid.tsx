@@ -108,7 +108,7 @@ export default function CollectionGrid({ items: baseItems, category, showWeaves,
   const [desk, setDesk] = useState(true); // viewport >= 1024px
   const btnRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
-  const [closed, setClosed] = useState<Record<string, boolean>>({});
+  const [opened, setOpened] = useState<Record<string, boolean>>({}); // every filter group starts closed
 
   const rawWeave = sp.get("weave");
   const weave = rawWeave === null ? defaultWeaves : rawWeave === "all" ? [] : list(rawWeave);
@@ -201,10 +201,10 @@ export default function CollectionGrid({ items: baseItems, category, showWeaves,
   };
 
   const group = (id: string, title: string, body: ReactNode) => {
-    const shut = !!closed[id];
+    const shut = !opened[id];
     return (
       <div className="cp-group" data-open={!shut}>
-        <button type="button" className="cp-trigger" aria-expanded={!shut} aria-controls={`cp-${id}`} onClick={() => setClosed((c) => ({ ...c, [id]: !c[id] }))}>
+        <button type="button" className="cp-trigger" aria-expanded={!shut} aria-controls={`cp-${id}`} onClick={() => setOpened((c) => ({ ...c, [id]: !c[id] }))}>
           <span>{title}</span>
           <Icon name={shut ? "plus" : "minus"} />
         </button>

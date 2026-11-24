@@ -61,6 +61,12 @@ export default function Header() {
     };
   }, [mobile]);
 
+  // a new page always starts with the dropdowns closed
+  useEffect(() => {
+    clearTimeout(timer.current);
+    setOpen(null);
+  }, [pathname]);
+
   useEffect(() => {
     if (search) setTimeout(() => input.current?.focus(), 60);
   }, [search]);
@@ -192,7 +198,16 @@ export default function Header() {
 
           <div className="bar" data-show={!heroMode && !mobile}>
         <div className="grid h-[84px] grid-cols-[1fr_auto_1fr] items-center">
-          <nav aria-label="Main">
+          <nav
+            aria-label="Main"
+            onClick={(e) => {
+              // choosing a link inside a dropdown closes it, even though the pointer is still over it
+              if ((e.target as HTMLElement).closest(".dd a")) {
+                clearTimeout(timer.current);
+                setOpen(null);
+              }
+            }}
+          >
             <ul className="m-0 flex h-[84px] list-none items-stretch gap-9 p-0">
               <li className="flex items-center" {...hover("sarees")}>
                 {trigger("sarees", nav.sarees.label)}
@@ -239,21 +254,6 @@ export default function Header() {
                 </div>
               </li>
 
-              <li className="relative flex items-center" {...hover("about")}>
-                {trigger("about", nav.about.label)}
-                <div id="dd-about" className="dd dd-sm" data-open={open === "about"}>
-                  <ul className="dd-list">
-                    {nav.about.links.map((l) => (
-                      <li key={l.label}><Link href={l.href} className="dd-link">{l.label}</Link></li>
-                    ))}
-                    <li className="dd-rule" aria-hidden="true" />
-                    {nav.about.action.map((l) => (
-                      <li key={l.label}><Link href={l.href} className="dd-link">{l.label}</Link></li>
-                    ))}
-                  </ul>
-                </div>
-              </li>
-
               <li className="flex items-center" {...hover("kurtis")}>
                 {trigger("kurtis", nav.kurtis.label)}
                 <div id="dd-kurtis" className="dd dd-mega" data-open={open === "kurtis"}>
@@ -293,6 +293,21 @@ export default function Header() {
                       <span className="mt-1.5 block text-[14px] text-ink/75">{nav.kurtis.feature.line}</span>
                     </Link>
                   </div>
+                </div>
+              </li>
+
+              <li className="relative flex items-center" {...hover("about")}>
+                {trigger("about", nav.about.label)}
+                <div id="dd-about" className="dd dd-sm" data-open={open === "about"}>
+                  <ul className="dd-list">
+                    {nav.about.links.map((l) => (
+                      <li key={l.label}><Link href={l.href} className="dd-link">{l.label}</Link></li>
+                    ))}
+                    <li className="dd-rule" aria-hidden="true" />
+                    {nav.about.action.map((l) => (
+                      <li key={l.label}><Link href={l.href} className="dd-link">{l.label}</Link></li>
+                    ))}
+                  </ul>
                 </div>
               </li>
             </ul>

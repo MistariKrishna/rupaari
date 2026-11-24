@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Icon } from "./Icon";
 import { useStore } from "./StoreProvider";
+import SizeGuide from "./SizeGuide";
 import WishlistButton from "./WishlistButton";
 import { money } from "@/lib/products";
 import type { ShopInfo } from "@/lib/catalog";
@@ -64,6 +65,7 @@ export default function ProductBuy({ id, name, sizes, inStock = true, shop, colo
             ))}
           </div>
           {err && <p className="rp-err sz-err" role="alert"><Icon name="warning" />Please select a size.</p>}
+          <SizeGuide />
         </div>
       )}
 

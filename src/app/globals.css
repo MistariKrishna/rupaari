@@ -3531,3 +3531,24 @@ button:focus-visible, [role="button"]:focus-visible, .btn:focus-visible, .icon-b
 .bd-list { min-height: 150px; }
 .bd-foot { flex: none; max-height: 62vh; overflow-y: auto; }
 .rp-rows .bd-save { font-weight: 400; }
+
+/* Size guide (kurtis) */
+.szg-link { display: inline-block; margin-top: 12px; padding: 0; background: none; border: 0; border-bottom: 1px solid #680f1a; color: #680f1a; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+.szg-back { position: fixed; inset: 0; z-index: 400; display: grid; place-items: center; padding: 16px; background: rgba(28, 26, 26, .55); }
+.szg { width: min(760px, 100%); max-height: 90vh; overflow: auto; background: #f7f1e7; border: 1px solid #c9a24d; padding: 24px; box-sizing: border-box; }
+.szg-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.szg-head h2 { margin: 0; font-family: var(--font-cinzel), serif; font-size: 1.3rem; letter-spacing: .05em; text-transform: uppercase; color: #4a0b13; }
+.szg-x { display: grid; place-items: center; width: 40px; height: 40px; background: none; border: 0; color: #4a0b13; cursor: pointer; }
+.szg-unit { display: inline-flex; border: 1px solid #bba99a; margin-bottom: 14px; }
+.szg-unit button { padding: 8px 14px; background: none; border: 0; font-size: 13px; color: #1c1a1a; cursor: pointer; }
+.szg-unit button[data-on="true"] { background: #680f1a; color: #f7f1e7; }
+.szg-scroll { overflow-x: auto; }
+.szg-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.szg-table th, .szg-table td { padding: 10px 8px; text-align: center; border-bottom: 1px solid #d9cdbd; }
+.szg-table thead th { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: #680f1a; }
+.szg-table tbody th { font-weight: 600; color: #4a0b13; }
+.szg-note { margin: 14px 0 0; font-size: 13px; line-height: 1.6; color: #1c1a1a; opacity: .8; }
+.szg-how { margin: 12px 0 0; padding-left: 18px; font-size: 13px; line-height: 1.7; color: #1c1a1a; }
+.szg-grid { display: grid; grid-template-columns: minmax(0, 250px) minmax(0, 1fr); gap: 20px; align-items: center; }
+.szg-fig { width: 100%; height: auto; max-height: 340px; }
+@media (max-width: 640px) { .szg-grid { grid-template-columns: minmax(0, 1fr); } .szg-fig { max-width: 250px; margin: 0 auto; } }
