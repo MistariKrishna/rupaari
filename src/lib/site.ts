@@ -1,3 +1,4 @@
+import type { BrandName } from "@/components/BrandIcon";
 // Site-wide settings. Fill in real details; empty values are hidden on the site.
 export const site = {
   name: "RUPAARI",
@@ -9,11 +10,14 @@ export const site = {
   },
   shopHref: "/collections/sarees", // point to your online shop when it exists
   social: [
-    { name: "Instagram", icon: "instagram", href: "" },
-    { name: "Facebook", icon: "facebook", href: "" },
+    // Paste each page's link between the quotes (WhatsApp: https://wa.me/91XXXXXXXXXX). Icons always show; a link is added once filled.
+    { name: "Instagram", icon: "instagram", href: "https://www.instagram.com/therupaari/" },
+    { name: "WhatsApp", icon: "whatsapp", href: "" },
+    { name: "YouTube", icon: "youtube", href: "https://www.youtube.com/channel/UCXKVU9M_hm-h2LotYNQXnOQ" },
+    { name: "Facebook", icon: "facebook", href: "https://www.facebook.com/therupaari/" },
     { name: "Pinterest", icon: "pinterest", href: "" },
     { name: "LinkedIn", icon: "linkedin", href: "" },
-  ] as const,
+  ] as { name: string; icon: BrandName; href: string }[],
 };
 
 export const menu = [

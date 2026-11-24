@@ -1,5 +1,6 @@
 "use client";
 
+import { AppleIcon, FacebookRoundIcon, GoogleIcon } from "./BrandIcon";
 import { useState } from "react";
 import { COUNTRIES } from "@/lib/countries";
 import type { Provider } from "@/lib/auth";
@@ -54,6 +55,7 @@ export function PasswordField({ id = "au-pw", value, onChange, label = "Password
   );
 }
 
+const MARK = { google: GoogleIcon, apple: AppleIcon, facebook: FacebookRoundIcon } as const;
 const PROVIDERS: { key: Provider; label: string }[] = [
   { key: "google", label: "Google" },
   { key: "apple", label: "Apple" },
@@ -68,7 +70,8 @@ export function SocialRow({ onPick, busy, verb = "Continue" }: { onPick: (p: Pro
       <div className="au-social" role="group" aria-label={`${verb} with`}>
         {PROVIDERS.map((p) => (
           <button key={p.key} type="button" className="btn btn-secondary au-btn" disabled={busy} onClick={() => onPick(p.key)} aria-label={`${verb} with ${p.label}`}>
-            {p.label}
+            {(() => { const Mark = MARK[p.key]; return <Mark className="au-mark" />; })()}
+            <span>{p.label}</span>
           </button>
         ))}
       </div>

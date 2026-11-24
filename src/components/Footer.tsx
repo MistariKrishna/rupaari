@@ -1,3 +1,4 @@
+import { BrandIcon } from "./BrandIcon";
 import Link from "next/link";
 import { site } from "@/lib/site";
 import { Icon } from "./Icon";
@@ -16,7 +17,7 @@ const cols = [
       { label: "New Arrivals", href: "/collections/sarees?sort=new" },
       { label: "Bridal Edit", href: "/collections/sarees?occasion=wedding" },
       { label: "Kurtis", href: "/collections/kurtis" },
-      { label: "Gifting", href: "/collections/gift-craft" },
+      { label: "Gift Craft", href: "/collections/gift-craft" },
     ],
   },
   {
@@ -40,7 +41,7 @@ const cols = [
 
 export default function Footer() {
   const { address, phone, email } = site.contact;
-  const socials = site.social.filter((s) => s.href);
+  const socials = [...site.social];
 
   return (
     <footer className="sec-1 relative overflow-hidden border-t border-gold/50 pb-8 pt-20 text-ink">
@@ -83,9 +84,15 @@ export default function Footer() {
                     <ul className="m-0 mt-5 flex list-none gap-2 p-0">
                       {socials.map((s) => (
                         <li key={s.name}>
-                          <a href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.name} className="flex h-10 w-10 items-center justify-center rounded-full border border-burgundy/40 text-burgundy transition-colors hover:bg-burgundy hover:text-ivory">
-                            <Icon name={s.icon} className="!h-[18px] !w-[18px]" />
-                          </a>
+                          {s.href ? (
+                            <a href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.name} title={s.name} className="flex h-10 w-10 items-center justify-center rounded-full border border-burgundy/40 text-burgundy transition-colors hover:bg-burgundy hover:text-ivory">
+                              <BrandIcon name={s.icon} className="!h-[18px] !w-[18px]" />
+                            </a>
+                          ) : (
+                            <span aria-label={s.name} title={s.name} className="flex h-10 w-10 items-center justify-center rounded-full border border-burgundy/40 text-burgundy">
+                              <BrandIcon name={s.icon} className="!h-[18px] !w-[18px]" />
+                            </span>
+                          )}
                         </li>
                       ))}
                     </ul>

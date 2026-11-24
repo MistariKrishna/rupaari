@@ -1,5 +1,6 @@
 "use client";
 
+import { BrandIcon } from "./BrandIcon";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { productSlot } from "@/lib/images";
@@ -20,10 +21,7 @@ const items = [
   { label: "Contact", href: "/contact" },
 ];
 
-const socials = ["Instagram", "WhatsApp", "Pinterest"].map((name) => ({
-  name,
-  href: site.social.find((s) => s.name === name)?.href || "",
-}));
+const socials = site.social.filter((s) => ["Instagram", "WhatsApp", "YouTube", "Facebook", "Pinterest"].includes(s.name));
 
 /**
  * Full-screen menu. A deep burgundy curtain drapes down behind a gold-trimmed curved edge, links rise
@@ -73,11 +71,13 @@ export default function MenuOverlay({ open, onClose }: { open: boolean; onClose:
           <div className="mo-foot" style={k(1)}>
             {socials.map((s) =>
               s.href ? (
-                <a key={s.name} href={s.href} target="_blank" rel="noopener noreferrer">
-                  {s.name}
+                <a key={s.name} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.name} title={s.name} className="mo-soc">
+                  <BrandIcon name={s.icon} />
                 </a>
               ) : (
-                <span key={s.name}>{s.name}</span>
+                <span key={s.name} aria-label={s.name} title={s.name} className="mo-soc">
+                  <BrandIcon name={s.icon} />
+                </span>
               ),
             )}
           </div>
