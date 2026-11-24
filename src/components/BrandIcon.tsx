@@ -1,3 +1,5 @@
+"use client";
+
 import { useId, type ReactNode } from "react";
 
 export type BrandName = "instagram" | "facebook" | "whatsapp" | "youtube" | "pinterest" | "linkedin";

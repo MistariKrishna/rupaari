@@ -41,7 +41,7 @@ const cols = [
 
 export default function Footer() {
   const { address, phone, email } = site.contact;
-  const socials = [...site.social];
+  const socials = site.social.filter((s) => ["Instagram", "Facebook", "YouTube"].includes(s.name));
 
   return (
     <footer className="sec-1 relative overflow-hidden border-t border-gold/50 pb-8 pt-20 text-ink">

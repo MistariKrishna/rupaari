@@ -3397,3 +3397,23 @@ button:focus-visible, [role="button"]:focus-visible, .btn:focus-visible, .icon-b
 .au-social .au-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
 .au-mark { width: 18px; height: 18px; flex: none; }
 .bi { display: block; width: 24px; height: 24px; flex: none; fill: currentColor; stroke: none; }
+
+/* small screens: smaller logo, and the social icons stay in the menu */
+@media (max-width: 1023px) {
+  .logo-img { width: 6.6rem; max-height: 2rem; }
+  .mo-side { display: block; }
+  .mo-side .mo-feat { display: none; }
+  .mo-foot { justify-content: flex-start; margin-top: 2rem; padding-top: 1.4rem; }
+  .mo-soc { width: 42px; height: 42px; }
+}
+
+.soc-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.cf-follow { display: flex; flex-direction: column; gap: 14px; margin-top: 8px; }
+.cf-follow .mo-soc { color: #680f1a; border-color: #680f1a; }
+.cf-follow .mo-soc::before { background: #680f1a; }
+@media (hover: hover) { .cf-follow .mo-soc:hover, .cf-follow .mo-soc:focus-visible { color: #f7f1e7; border-color: #680f1a; box-shadow: 0 8px 18px rgba(74, 11, 19, 0.22), 0 0 0 4px rgba(104, 15, 26, 0.12); } }
+@media (max-width: 1023px) {
+  .mo-bg::before { font-size: 15vw; bottom: 0.35rem; letter-spacing: 0.05em; }
+  .logo-img { width: 7.4rem; }
+  .mo-foot { padding-top: 0; margin-top: 2.2rem; }
+}

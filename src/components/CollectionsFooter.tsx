@@ -1,6 +1,7 @@
 import Link from "next/link";
 import NewsletterForm from "./NewsletterForm";
 import Reveal from "./Reveal";
+import SocialLinks from "./SocialLinks";
 
 const cols = [
   { title: "Shop", links: [["All Sarees", "/collections/sarees"], ["New Arrivals", "/collections/sarees?sort=new"], ["Bridal Edit", "/collections/sarees?occasion=wedding"], ["Shop by Weave", "/collections"]] },
@@ -18,6 +19,10 @@ export default function CollectionsFooter() {
           <p className="cf-p">Notes on new sarees, enduring craft and the world of RUPAARI.</p>
           <NewsletterForm className="w-full" />
           <p className="cf-small">By subscribing, you agree to our Privacy Policy. Unsubscribe at any time.</p>
+          <div className="cf-follow">
+            <p className="cf-eyebrow">Follow us</p>
+            <SocialLinks />
+          </div>
         </div>
         <div className="cf-cols">
           {cols.map((c) => (
@@ -37,7 +42,7 @@ export default function CollectionsFooter() {
           <Link href="/contact">Privacy Policy</Link>
           <Link href="/contact">Terms &amp; Conditions</Link>
         </p>
-        {/* <p>India · INR ₹</p> */}
+        <p>India · INR ₹</p>
       </Reveal>
     </footer>
   );
