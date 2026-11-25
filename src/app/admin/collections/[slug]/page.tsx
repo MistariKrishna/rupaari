@@ -51,7 +51,7 @@ export default function EditCollection() {
               <Field label="Story" wide><textarea className="adm-in" value={c.story} onChange={(e) => up("story", e.target.value)} /></Field>
               <Field label="Holds">
                 <select className="adm-in" value={c.category ?? "sarees"} onChange={(e) => up("category", e.target.value as CategorySlug)}>
-                  <option value="sarees">Sarees</option><option value="kurtis">Kurtis</option><option value="gift-craft">Gift and craft</option>
+                  <option value="sarees">Sarees</option><option value="kurtis">Kurtis</option><option value="gift-craft">Gifting</option>
                 </select>
               </Field>
               <Field label="Colour when there is no image">

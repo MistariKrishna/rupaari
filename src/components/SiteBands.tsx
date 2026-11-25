@@ -90,10 +90,10 @@ export function NewArrivals() {
         ))}
         <div className="snap-item snap-end">
           <Link href="/collections/sarees" className="snap-all group">
-            <span className="f-serif text-[2rem] leading-tight text-wine">See everything</span>
-            <span className="mt-4 inline-flex h-14 w-14 items-center justify-center rounded-full border border-burgundy text-burgundy transition-colors group-hover:bg-burgundy group-hover:text-ivory">
-              <Icon name="arrow-right" />
-            </span>
+            <span className="sa-eyebrow">Explore</span>
+            <span className="sa-title">See everything</span>
+            <span className="sa-count">{catalog.length} {catalog.length === 1 ? "piece" : "pieces"}</span>
+            <span className="sa-btn" aria-hidden="true"><Icon name="arrow-right" /></span>
           </Link>
         </div>
       </ArrivalsRail>
@@ -102,11 +102,11 @@ export function NewArrivals() {
 }
 
 /** "From ₹x" line on a home category tile; shown only when that category has a published product. */
-export function FromPrice({ category }: { category: CategorySlug }) {
+export function FromPrice({ category, className = "mb-1 text-[11px] uppercase tracking-[.22em] text-ivory/80" }: { category: CategorySlug; className?: string }) {
   const catalog = useCatalog();
   const prices = catalog.filter((p) => p.category === category).map((p) => p.price);
   if (!prices.length) return null;
-  return <p className="mb-1 text-[11px] uppercase tracking-[.22em] text-ivory/80">From {money(Math.min(...prices))}</p>;
+  return <p className={className}>From {money(Math.min(...prices))}</p>;
 }
 
 const RING_TONES = ["wine", "burgundy", "gold", "taupe", "ivory"] as const;
@@ -140,10 +140,10 @@ export function KurtiShowcase() {
         ))}
         <div className="snap-item snap-end">
           <Link href="/collections/kurtis" className="snap-all group">
-            <span className="f-serif text-[2rem] leading-tight text-wine">All kurtis</span>
-            <span className="mt-4 inline-flex h-14 w-14 items-center justify-center rounded-full border border-burgundy text-burgundy transition-colors group-hover:bg-burgundy group-hover:text-ivory">
-              <Icon name="arrow-right" />
-            </span>
+            <span className="sa-eyebrow">Explore</span>
+            <span className="sa-title">All kurtis</span>
+            <span className="sa-count">{kurtis.length} {kurtis.length === 1 ? "piece" : "pieces"}</span>
+            <span className="sa-btn" aria-hidden="true"><Icon name="arrow-right" /></span>
           </Link>
         </div>
       </ArrivalsRail>

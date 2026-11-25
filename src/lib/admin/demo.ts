@@ -106,25 +106,101 @@ const fabricClose = (c: Col, m: number, kind: Kind) => {
   return svgUri(s + `<rect width="400" height="500" fill="url(#sh)" opacity=".7"/>`);
 };
 
-const kurtiFlat = (c: Col, flare: number, m: number) => {
-  const f = flare; // extra width at the hem
-  const d = `M150 62Q200 108 250 62L300 76L352 214L316 230L288 142L${330 + f} 452L${70 - f} 452L112 142L84 230L48 214L100 76Z`;
+/** What a kurti picture must show: the same choices the filters use */
+interface KAttrs { style: string; neck: string; sleeve: string; length: string }
+
+const HEM: Record<string, number> = { cropped: 300, short: 340, hip: 372, knee: 410, "below-knee": 430, calf: 448, ankle: 470, floor: 486, "high-low": 448, asymmetric: 448, layered: 448, slit: 448 };
+/** [outer end y, cuff width, extra flare] per sleeve */
+const SLEEVE: Record<string, [number, number, number]> = {
+  cap: [112, 30, 0], short: [150, 34, 0], half: [182, 36, 0], elbow: [190, 36, 0], "three-quarter": [222, 36, 0], long: [262, 30, 0], "extra-long": [292, 28, 0],
+  puff: [138, 40, 6], bell: [215, 36, 46], bishop: [250, 44, 0], balloon: [196, 36, 30], ruffle: [165, 36, 6], flared: [222, 36, 34], slit: [222, 36, 0], "cold-shoulder": [235, 34, 0], cape: [150, 36, 0], layered: [200, 36, 0],
+};
+
+/** neckline from the left neck point to the right one, plus whether a yoke panel hangs below it and any extra drawing */
+function neckline(neck: string, c: Col): { nl: [number, number]; nr: [number, number]; d: string; panel: boolean; extra: string } {
+  const A = c.accent;
+  const std = { nl: [150, 62] as [number, number], nr: [250, 62] as [number, number] };
+  const band = (y: number) => `<rect x="168" y="${y}" width="64" height="${64 - y}" rx="3" fill="${c.deep}" stroke="${A}" stroke-width="2"/>`;
+  switch (neck) {
+    case "v": return { ...std, d: "L200 122L250 62", panel: true, extra: "" };
+    case "square": return { ...std, d: "L150 102L250 102L250 62", panel: true, extra: "" };
+    case "boat": return { nl: [118, 66], nr: [282, 66], d: "Q200 92 282 66", panel: false, extra: "" };
+    case "scoop": return { ...std, d: "Q200 142 250 62", panel: true, extra: "" };
+    case "u": return { ...std, d: "L150 98Q200 146 250 98L250 62", panel: true, extra: "" };
+    case "sweetheart": return { ...std, d: "C150 104 190 104 200 118C210 104 250 104 250 62", panel: true, extra: "" };
+    case "keyhole": return { ...std, d: "Q200 96 250 62", panel: false, extra: `<circle cx="200" cy="112" r="9" fill="${c.deep}" stroke="${A}" stroke-width="2"/><path d="M200 96V112" stroke="${A}" stroke-width="2"/>` };
+    case "notch": return { ...std, d: "L190 62L200 96L210 62L250 62", panel: false, extra: "" };
+    case "collar": return { ...std, d: "L250 62", panel: false, extra: `<path d="M150 62L196 104L172 112Z M250 62L204 104L228 112Z" fill="${c.deep}" stroke="${A}" stroke-width="2" stroke-linejoin="round"/>` };
+    case "mandarin": return { ...std, d: "L250 62", panel: false, extra: band(44) };
+    case "high": return { ...std, d: "L250 62", panel: false, extra: band(36) };
+    case "halter": return { nl: [168, 62], nr: [232, 62], d: "L232 62", panel: false, extra: `<path d="M168 62C170 44 176 36 184 30M232 62C230 44 224 36 216 30" stroke="${A}" stroke-width="3" fill="none"/>` };
+    case "cowl": return { ...std, d: "Q200 128 250 62", panel: false, extra: `<path d="M158 70Q200 126 242 70M168 72Q200 112 232 72" fill="none" stroke="${c.deep}" stroke-width="3" opacity=".7"/>` };
+    case "asymmetric":
+    case "one-shoulder": return { nl: [150, 62], nr: [262, 112], d: "L262 112", panel: false, extra: `<path d="M150 62L262 112" stroke="${A}" stroke-width="3"/>` };
+    case "angrakha": return { ...std, d: "L250 62", panel: false, extra: `<path d="M150 62L262 156M250 62L176 156" fill="none" stroke="${A}" stroke-width="3"/><path d="M150 62L262 156L240 160L150 70Z" fill="${c.deep}" opacity=".55"/>` };
+    case "potli-button": return { ...std, d: "Q200 108 250 62", panel: true, extra: [168, 184, 200, 216, 232].map((x, i) => `<circle cx="${x}" cy="${80 + (i === 2 ? 14 : i % 4 === 0 || i === 4 ? -2 : 8)}" r="4" fill="${A}"/>`).join("") };
+    case "slit": return { ...std, d: "Q200 108 250 62", panel: false, extra: `<path d="M200 98V190" stroke="${A}" stroke-width="3"/>` };
+    case "embroidered": return { ...std, d: "Q200 108 250 62", panel: true, extra: `<path d="M150 62Q200 108 250 62" fill="none" stroke="${A}" stroke-width="6" stroke-dasharray="2 5" stroke-linecap="round"/>` };
+    case "tie-up": return { ...std, d: "L200 112L250 62", panel: false, extra: `<path d="M200 112C186 140 182 164 188 190M200 112C214 140 218 164 212 190" fill="none" stroke="${A}" stroke-width="3"/><circle cx="188" cy="194" r="5" fill="${A}"/><circle cx="212" cy="194" r="5" fill="${A}"/>` };
+    case "yoke": return { ...std, d: "Q200 108 250 62", panel: true, extra: `<path d="M118 150Q200 190 282 150" fill="none" stroke="${A}" stroke-width="3"/>` };
+    default: return { ...std, d: "Q200 108 250 62", panel: true, extra: "" }; // round
+  }
+}
+
+const kurtiFlat = (c: Col, flare: number, m: number, k: KAttrs) => {
+  const hemY = HEM[k.length] ?? 448;
+  const nk = neckline(k.neck, c);
+  const slope = (42 + flare) / 310;
+  const xr = (y: number) => 288 + (42 + flare) * ((y - 142) / 310) * (k.style === "peplum" || k.style === "anarkali" || k.style === "angrakha-anarkali" ? 0.85 : 1);
+  let side = "";
+  if (k.style === "anarkali" || k.style === "angrakha-anarkali") side = `L${284} 190L${xr(hemY) + 22} ${hemY}`;
+  else if (k.style === "peplum") side = `L${280} 210L${xr(hemY) + 36} ${hemY}`;
+  else side = `L${xr(hemY)} ${hemY}`;
+  const mirrorSide = (str: string) => str.replace(/L([\d.]+) ([\d.]+)/g, (_m, x, y) => `L${400 - Number(x)} ${y}`);
+  const rightPts = side.match(/L[\d.]+ [\d.]+/g) ?? [];
+  const leftPts = rightPts.map((t) => mirrorSide(t)).reverse();
+  const hemRight = rightPts[rightPts.length - 1] ?? "";
+  void hemRight; void slope;
+  const sleeveless = k.sleeve === "sleeveless" || k.neck === "halter";
+  const shoulderR = sleeveless ? "L284 76" : "L300 76";
+  const shoulderL = sleeveless ? "L116 76" : "L100 76";
+  const body_d = `M${nk.nl[0]} ${nk.nl[1]}${nk.d}${shoulderR}L288 142${rightPts.join("")}${leftPts.join("")}L112 142${shoulderL}Z`;
+  // sleeves (right one drawn, the left is its mirror)
+  const sp = SLEEVE[k.sleeve];
+  let sleeve = "";
+  if (sp && !sleeveless) {
+    const [ey, w, extra] = sp;
+    const ox = Math.min(300 + Math.min(65, (52 * (ey - 76)) / 138), 372 - extra) + extra;
+    const poly = `M300 76L${ox} ${ey}L${ox - w - extra} ${ey + 14}L288 142Z`;
+    sleeve = `<path d="${poly}" fill="${c.body}"/><path d="${poly}" fill="${c.deep}" opacity=".35"/>`;
+    if (k.sleeve === "puff") sleeve += `<ellipse cx="316" cy="104" rx="30" ry="26" fill="${c.body}"/><ellipse cx="316" cy="104" rx="30" ry="26" fill="${c.deep}" opacity=".25"/>`;
+    if (k.sleeve === "ruffle") sleeve += [0, 1, 2, 3].map((i) => `<circle cx="${ox - 6 - i * ((w + extra) / 3.2)}" cy="${ey + 8 + i * 4}" r="7" fill="${c.accent}"/>`).join("");
+    if (k.sleeve === "slit") sleeve += `<path d="M${ox - 14} ${ey - 40}L${ox - 14} ${ey + 8}" stroke="${c.accent}" stroke-width="2"/>`;
+    if (k.sleeve === "layered") sleeve += `<path d="M300 76L${ox - 6} ${ey - 56}L${ox - w - 6} ${ey - 42}L288 120Z" fill="${c.accent}" opacity=".45"/>`;
+    if (k.sleeve === "cape") sleeve += `<path d="M300 76L${ox + 20} ${ey + 20}L${ox - 60} ${ey + 52}L288 142Z" fill="${c.accent}" opacity=".3" stroke="${c.accent}" stroke-width="1.5"/>`;
+    if (k.sleeve === "cold-shoulder") sleeve += `<ellipse cx="312" cy="96" rx="24" ry="13" fill="#f1e8d8" stroke="${c.accent}" stroke-width="2" stroke-dasharray="4 3"/>`;
+    sleeve += `<path d="M${ox - w - extra} ${ey + 14}L${ox} ${ey}" stroke="${c.accent}" stroke-width="4"/>`;
+  }
+  const sleeves = sleeve ? `<g>${sleeve}</g><g transform="translate(400 0) scale(-1 1)">${sleeve}</g>` : "";
+  const bandY = hemY - 30;
+  const panel = nk.panel && k.style !== "jacket-cape" ? `<path d="M${nk.nl[0] + 8} ${nk.nl[1] + 8}${nk.d.replace(/Q/g, "Q")}L238 160Q200 182 162 160Z" fill="${c.deep}" opacity=".6"/>` : "";
+  const jacket = k.style === "jacket-cape" ? `<path d="M200 92L200 ${hemY}" stroke="${c.accent}" stroke-width="3"/><path d="M200 92L${(200 + xr(hemY) - 200) * 0.18 + 200 - 28} ${hemY}L${200 + 28 - (xr(hemY) - 200) * 0.18} ${hemY}Z" fill="${c.deep}" opacity=".5"/>` : "";
+  const seam = k.style === "anarkali" || k.style === "angrakha-anarkali" ? `<path d="M${nk.nl[0] > 150 ? 112 : 114} 188L286 188" stroke="${c.accent}" stroke-width="3" opacity=".9"/>` : k.style === "peplum" ? `<path d="M118 210L282 210" stroke="${c.accent}" stroke-width="3"/>` : "";
+  const placket = ["angrakha", "collar", "halter", "tie-up", "slit", "asymmetric", "one-shoulder"].includes(k.neck) || k.style === "jacket-cape" ? "" : `<line x1="200" y1="150" x2="200" y2="${k.style === "peplum" ? 210 : 250}" stroke="${c.accent}" stroke-width="2"/>` + [0, 1, 2, 3].map((i) => `<circle cx="200" cy="${166 + i * 22}" r="3.2" fill="${c.accent}"/>`).join("");
+  const patH = Math.max(0, bandY - 20 - 250);
   return svgUri(
-    `<ellipse cx="200" cy="474" rx="${140 + f}" ry="10" fill="#000" opacity=".12"/>` +
-      `<path d="${d}" fill="${c.body}"/>` +
-      `<g clip-path="url(#k)"><clipPath id="k"><path d="${d}"/></clipPath>` +
-      body(m, c, 60, 250, 280, 170) +
-      `<rect x="0" y="425" width="400" height="30" fill="${c.deep}"/><rect x="0" y="421" width="400" height="4" fill="${c.accent}"/>` +
-      diamonds(0, 440, 400, 22, 4.5, c.accent) +
+    `<g transform="translate(0 ${Math.round(250 - (30 + hemY + 14) / 2)})"><ellipse cx="200" cy="${hemY + 14}" rx="${130 + flare}" ry="9" fill="#000" opacity=".12"/>` +
+      sleeves +
+      `<path d="${body_d}" fill="${c.body}"/>` +
+      `<g clip-path="url(#k)"><clipPath id="k"><path d="${body_d}"/></clipPath>` +
+      (patH > 20 ? body(m, c, 60, 236, 280, bandY - 236) : "") +
+      `<rect x="0" y="${bandY}" width="400" height="30" fill="${c.deep}"/><rect x="0" y="${bandY - 4}" width="400" height="4" fill="${c.accent}"/>` +
+      diamonds(0, bandY + 15, 400, 22, 4.5, c.accent) +
+      (k.length === "layered" ? `<rect x="0" y="${bandY - 60}" width="400" height="6" fill="${c.accent}" opacity=".8"/>` : "") +
       `</g>` +
-      `<path d="M150 62Q200 108 250 62" fill="none" stroke="${c.accent}" stroke-width="5"/>` +
-      `<path d="M158 70Q200 118 242 70L236 150Q200 178 164 150Z" fill="${c.deep}" opacity=".85"/>` +
-      `<path d="M158 70Q200 118 242 70" fill="none" stroke="${c.accent}" stroke-width="2"/>` +
-      [0, 1, 2].map((i) => buta(200, 112 + i * 18, 0.42, c.accent)).join("") +
-      `<line x1="200" y1="150" x2="200" y2="250" stroke="${c.accent}" stroke-width="2"/>` +
-      [0, 1, 2, 3].map((i) => `<circle cx="200" cy="${166 + i * 25}" r="3.4" fill="${c.accent}"/>`).join("") +
-      `<path d="M48 214L100 76L112 142L84 230Z" fill="${c.deep}" opacity=".35"/><path d="M352 214L300 76L288 142L316 230Z" fill="${c.deep}" opacity=".35"/>` +
-      `<path d="${d}" fill="url(#sh)"/>`,
+      panel + jacket + seam + nk.extra + placket +
+      (nk.panel || ["round", "scoop", "v", "u", "square", "sweetheart", "boat", "embroidered", "yoke", "potli-button", "cowl", "keyhole"].includes(k.neck) ? `<path d="M${nk.nl[0]} ${nk.nl[1]}${nk.d}" fill="none" stroke="${c.accent}" stroke-width="4"/>` : "") +
+      `<path d="${body_d}" fill="url(#sh)"/></g>`,
   );
 };
 
@@ -160,9 +236,9 @@ const basket = (c: Col) =>
       `<path d="M70 236H330L304 440H96Z" fill="url(#sh)"/>`,
   );
 
-const pictures = (kind: Kind, c: Col, m: number, flare: number): string[] =>
+const pictures = (kind: Kind, c: Col, m: number, flare: number, k?: KAttrs): string[] =>
   kind === "saree" ? [sareeFlat(c, m), fabricClose(c, m, "saree")]
-  : kind === "kurti" ? [kurtiFlat(c, flare, m), fabricClose(c, m, "kurti")]
+  : kind === "kurti" ? [kurtiFlat(c, flare, m, k ?? { style: "straight", neck: "round", sleeve: "three-quarter", length: "knee" }), fabricClose(c, m, "kurti")]
   : kind === "box" ? [giftBox(c), fabricClose(c, m, "kurti")]
   : kind === "potli" ? [potli(c), fabricClose(c, m, "kurti")]
   : [basket(c), fabricClose(c, m, "kurti")];
@@ -181,16 +257,16 @@ const SAREE_WEAVES: { slug: WeaveSlug; label: string; coll: string; region: stri
   { slug: "venkatagiri", label: "Venkatagiri", coll: "uppada", region: "Venkatagiri, Andhra Pradesh", lo: 5500, hi: 12000 },
 ];
 const SAREE_STYLES = ["Temple Border", "Peacock Motif", "Zari Checks", "Buta Pallu", "Pure Zari Tissue"];
-// [name, flare, style slug, usual length, usual neck choices, usual sleeve choices]
-const KURTI_STYLES: [string, number, string, string, string[], string[]][] = [
-  ["Straight Cut", 0, "straight", "knee", ["round", "v", "mandarin", "notch"], ["three-quarter", "long", "short"]],
-  ["A-Line", 14, "a-line", "below-knee", ["round", "scoop", "boat", "v"], ["three-quarter", "elbow", "flared"]],
-  ["Anarkali", 38, "anarkali", "floor", ["round", "sweetheart", "keyhole", "high"], ["long", "three-quarter", "bell"]],
-  ["Angrakha Anarkali", 30, "angrakha-anarkali", "ankle", ["angrakha", "collar"], ["long", "three-quarter"]],
-  ["Kaftan", 20, "kaftan", "calf", ["boat", "round", "cowl"], ["bell", "cap", "balloon"]],
-  ["Jacket", 6, "jacket-cape", "calf", ["collar", "mandarin", "v"], ["long", "sleeveless", "cape"]],
-  ["Peplum", 10, "peplum", "hip", ["square", "sweetheart", "v"], ["puff", "cap", "short"]],
-  ["Tunic", 4, "tunic", "short", ["round", "tie-up", "yoke"], ["short", "half", "ruffle"]],
+// [name, flare, style slug, usual lengths, usual necks, usual sleeves]
+const KURTI_STYLES: [string, number, string, string[], string[], string[]][] = [
+  ["Straight Cut", 0, "straight", ["knee", "calf", "below-knee", "hip"], ["round", "v", "mandarin", "notch", "collar", "keyhole", "high", "yoke"], ["three-quarter", "long", "short", "half", "slit"]],
+  ["A-Line", 14, "a-line", ["knee", "below-knee", "calf"], ["round", "scoop", "boat", "v", "u", "square", "embroidered"], ["three-quarter", "elbow", "flared", "short", "cap"]],
+  ["Anarkali", 38, "anarkali", ["floor", "ankle"], ["round", "sweetheart", "keyhole", "high", "u", "potli-button"], ["long", "three-quarter", "bell", "bishop", "balloon"]],
+  ["Angrakha Anarkali", 30, "angrakha-anarkali", ["ankle", "floor", "calf"], ["angrakha", "collar"], ["long", "three-quarter", "bell"]],
+  ["Kaftan", 20, "kaftan", ["calf", "ankle", "below-knee"], ["boat", "round", "cowl", "asymmetric", "tie-up"], ["bell", "cap", "balloon", "cold-shoulder", "flared"]],
+  ["Jacket", 6, "jacket-cape", ["calf", "knee", "ankle"], ["collar", "mandarin", "v", "high"], ["long", "sleeveless", "cape", "layered"]],
+  ["Peplum", 10, "peplum", ["hip", "short", "cropped"], ["square", "sweetheart", "v", "halter", "one-shoulder"], ["puff", "cap", "short", "ruffle", "sleeveless"]],
+  ["Tunic", 4, "tunic", ["short", "hip", "knee"], ["round", "tie-up", "yoke", "slit", "scoop"], ["short", "half", "ruffle", "puff", "extra-long"]],
 ];
 // [name used in titles, fabric group, fabric type]
 const KURTI_FABRICS: [string, string, string][] = [
@@ -229,7 +305,7 @@ function pickColours(r: () => number, n: number): Col[] {
   return out;
 }
 
-interface Spec { kStyle?: string; kLength?: string; kNecks?: string[]; kSleeves?: string[]; kFabric?: [string, string, string]; category: CategorySlug; kind: Kind; name: string; weave?: WeaveSlug; collection: string; region: string; price: number; m: number; flare: number; fabric: string; style: string }
+interface Spec { kStyle?: string; kLengths?: string[]; kNecks?: string[]; kSleeves?: string[]; kFabric?: [string, string, string]; category: CategorySlug; kind: Kind; name: string; weave?: WeaveSlug; collection: string; region: string; price: number; m: number; flare: number; fabric: string; style: string }
 
 function specs(): Spec[] {
   const out: Spec[] = [];
@@ -242,7 +318,7 @@ function specs(): Spec[] {
   KURTI_STYLES.forEach(([st, flare, slugS, len, necks, sleeves], si) =>
     KURTI_FABRICS.forEach((fb, fi) => {
       const r = rng(si * 17 + fi * 5 + 101);
-      out.push({ category: "kurtis", kind: "kurti", name: `${fb[0]} ${st} Kurti`, collection: "kurtis-silk", region: "", price: roundTo(1400 + r() * 3800 + fi * 220, 50), m: (si + fi) % 4, flare, fabric: fb[0], style: st, kStyle: slugS, kLength: len, kNecks: necks, kSleeves: sleeves, kFabric: fb });
+      out.push({ category: "kurtis", kind: "kurti", name: `${fb[0]} ${st} Kurti`, collection: "kurtis-silk", region: "", price: roundTo(1400 + r() * 3800 + fi * 220, 50), m: (si + fi) % 4, flare, fabric: fb[0], style: st, kStyle: slugS, kLengths: len, kNecks: necks, kSleeves: sleeves, kFabric: fb });
     }),
   );
   GIFT_KINDS.forEach((k, ki) =>
@@ -266,6 +342,8 @@ export function demoCatalogue(): { products: AdminProduct[]; stock: StockRow[] }
     const alt = (c: Col) => `${s.name} in ${c.name}`;
     const mrp = roundTo(s.price * (1.12 + r() * 0.14), s.price > 5000 ? 500 : 50);
     const kurti = s.category === "kurtis";
+    const pick = <T,>(arr: T[]) => arr[Math.floor(r() * arr.length)]!;
+    const ka = kurti ? { style: s.kStyle!, neck: pick(s.kNecks!), sleeve: pick(s.kSleeves!), length: pick(s.kLengths!) } : undefined;
     const sizes = kurti ? [...KURTI_SIZES] : [];
     const desc =
       s.category === "sarees"
@@ -290,9 +368,9 @@ export function demoCatalogue(): { products: AdminProduct[]; stock: StockRow[] }
       ...(kurti
         ? {
             style: s.kStyle,
-            neck: s.kNecks![Math.floor(r() * s.kNecks!.length)],
-            sleeve: s.kSleeves![Math.floor(r() * s.kSleeves!.length)],
-            length: s.kLength,
+            neck: ka!.neck,
+            sleeve: ka!.sleeve,
+            length: ka!.length,
             fabricGroup: s.kFabric![1],
             fabricType: s.kFabric![2],
             wearTags: wearFor(i, s.kFabric![1], r),
@@ -307,12 +385,12 @@ export function demoCatalogue(): { products: AdminProduct[]; stock: StockRow[] }
       weightG: s.category === "sarees" ? 650 : "",
       lengthM: s.category === "sarees" ? 5.5 : "",
       blouse: s.category === "sarees",
-      images: imgs(pictures(s.kind, first, s.m, s.flare), alt(first)),
+      images: imgs(pictures(s.kind, first, s.m, s.flare, ka), alt(first)),
       sku: `RP-D${s.category === "sarees" ? "S" : kurti ? "K" : "G"}-${String(i + 1).padStart(3, "0")}`,
       colourName: first.name,
       colourHex: first.body,
       colourSoldOut: false,
-      variants: rest.map((c, k) => ({ id: `${id}-v${k + 1}`, name: c.name, images: imgs(pictures(s.kind, c, s.m, s.flare), alt(c)), soldOut: i % 11 === k + 3 })),
+      variants: rest.map((c, k) => ({ id: `${id}-v${k + 1}`, name: c.name, images: imgs(pictures(s.kind, c, s.m, s.flare, ka), alt(c)), soldOut: i % 11 === k + 3 })),
       soldOut: i % 29 === 28,
       mrp,
       price: s.price,

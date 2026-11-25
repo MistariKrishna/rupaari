@@ -38,7 +38,7 @@ export default function Reports() {
     };
     const byCollection = group((_, it) => {
       const p = d.products.find((x) => x.id === it.id);
-      return d.collections.find((c) => c.id === p?.collection)?.title ?? (p?.category === "kurtis" ? "Kurtis" : p?.category === "gift-craft" ? "Gift and craft" : "Other");
+      return d.collections.find((c) => c.id === p?.collection)?.title ?? (p?.category === "kurtis" ? "Kurtis" : p?.category === "gift-craft" ? "Gifting" : "Other");
     });
     const byCountry = group((o) => o.address.country);
     const byCity = group((o) => `${o.address.city}, ${o.address.country}`).slice(0, 8);

@@ -41,7 +41,7 @@ export const collections: CollectionInfo[] = [
   },
   {
     slug: "gift-craft",
-    title: "Giftinh",
+    title: "Gifting",
     blurb: "Considered packaging and gifts to give a saree with care.",
     tone: "gold",
     items: [

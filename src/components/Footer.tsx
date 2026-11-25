@@ -17,7 +17,7 @@ const cols = [
       { label: "New Arrivals", href: "/collections/sarees?sort=new" },
       { label: "Bridal Edit", href: "/collections/sarees?occasion=wedding" },
       { label: "Kurtis", href: "/collections/kurtis" },
-      { label: "Gift Craft", href: "/collections/gift-craft" },
+      { label: "Gifting", href: "/collections/gift-craft" },
     ],
   },
   {

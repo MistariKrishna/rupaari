@@ -28,7 +28,7 @@ export const menu = [
     children: [
       { label: "Sarees", href: "/collections/sarees" },
       { label: "Kurtis", href: "/collections/kurtis" },
-      { label: "Gift Craft", href: "/collections/gift-craft" },
+      { label: "Gifting", href: "/collections/gift-craft" },
     ],
   },
   {

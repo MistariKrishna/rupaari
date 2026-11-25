@@ -118,7 +118,7 @@ export const occasions: { slug: OccasionSlug; label: string; line: string; tone:
 export const categories: { slug: CategorySlug; label: string; blurb: string; tone: Tone }[] = [
   { slug: "sarees", label: "Sarees", blurb: "Silk sarees with woven borders, made to be worn and passed on.", tone: "wine" },
   { slug: "kurtis", label: "Kurtis", blurb: "Handwoven silk kurtis with a clean, considered cut.", tone: "burgundy" },
-  { slug: "gift-craft", label: "Gift Craft", blurb: "Considered packaging and gifts to give a saree with care.", tone: "gold" },
+  { slug: "gift-craft", label: "Gifting", blurb: "Considered packaging and gifts to give a saree with care.", tone: "gold" },
 ];
 
 /**
