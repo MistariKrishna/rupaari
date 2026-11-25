@@ -27,7 +27,7 @@ export default function CheckoutClient() {
   const router = useRouter();
   const { lines, subtotal, clear, ready } = useStore();
   const { add } = useOrders();
-  const { user } = useSession();
+  const { user, ready: sessionReady } = useSession();
 
   const [step, setStep] = useState<Step>(1);
 
@@ -107,7 +107,7 @@ export default function CheckoutClient() {
 
   /* ---- order ---- */
   const place = async () => {
-    if (!pay || items.length === 0) return;
+    if (!user || !pay || items.length === 0) return;
     setFailMsg("");
     if (pay !== "cod") {
       setPayState("processing");
@@ -156,6 +156,25 @@ export default function CheckoutClient() {
       </div>
     );
   }
+
+  if (sessionReady && !user) {
+    return (
+      <div className="rp-page">
+        <div className="rp-wrap">
+          <Crumbs items={[{ label: "Home", href: "/" }, { label: "Bag", href: "/bag" }, { label: "Checkout" }]} />
+          <h1 className="rp-title">Checkout</h1>
+          <div className="rp-empty">
+            <Icon name="user" />
+            <h2>Sign in to place your order</h2>
+            <p>An account is needed to confirm an order, so you can track it, return it and see it in My orders. Your bag stays as it is.</p>
+            <Link href="/login?next=/checkout" className="btn">Sign in</Link>
+            <p>New here? <Link href="/signup?next=/checkout" className="rp-link">Create an account</Link></p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  if (!sessionReady) return <div className="rp-page" />;
 
   const set = (k: keyof Address) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setAddr((a) => ({ ...a, [k]: k === "pin" && a.country === "India" ? e.target.value.replace(/\D/g, "").slice(0, 6) : e.target.value }));

@@ -7,11 +7,22 @@ export interface Point {
   value: number;
 }
 
-/** Small responsive line chart (SVG). Hover or focus a point for its value. */
+/** Round a maximum up to a tidy number that divides into four equal steps (1, 2, 4, 8 or 10 times a power of ten). */
+const niceMax = (m: number) => {
+  const e = Math.pow(10, Math.floor(Math.log10(m)));
+  const f = m / e;
+  return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 4 ? 4 : f <= 8 ? 8 : 10) * e;
+};
+const trim = (n: number) => String(Math.round(n * 10) / 10);
+/** Short axis numbers: 25K, 1.5L (lakh), 2Cr (crore). */
+const compact = (n: number) => (n >= 1e7 ? `${trim(n / 1e7)}Cr` : n >= 1e5 ? `${trim(n / 1e5)}L` : n >= 1e3 ? `${trim(n / 1e3)}K` : trim(n));
+
+/** Small responsive line chart (SVG) with a value axis on the left. Hover or focus a point for its value. */
 export function LineChart({ points, fmt = (n) => String(n), height = 200 }: { points: Point[]; fmt?: (n: number) => string; height?: number }) {
   const [hi, setHi] = useState<number | null>(null);
-  const W = 640, H = height, pl = 8, pr = 8, pt = 14, pb = 22;
-  const max = Math.max(1, ...points.map((p) => p.value));
+  const W = 640, H = height, pl = 54, pr = 12, pt = 14, pb = 24;
+  const max = niceMax(Math.max(1, ...points.map((p) => p.value)));
+  const sym = fmt(1).trim().startsWith("₹") ? "₹" : "";
   const x = (i: number) => pl + (points.length <= 1 ? 0 : (i / (points.length - 1)) * (W - pl - pr));
   const y = (v: number) => pt + (1 - v / max) * (H - pt - pb);
   const path = points.map((p, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(p.value).toFixed(1)}`).join(" ");
@@ -21,8 +32,17 @@ export function LineChart({ points, fmt = (n) => String(n), height = 200 }: { po
   return (
     <div className="adm-chart" style={{ position: "relative" }}>
       <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Line chart" onMouseLeave={() => setHi(null)}>
-        {[0, 0.5, 1].map((t) => (
-          <line key={t} x1={pl} x2={W - pr} y1={y(max * t)} y2={y(max * t)} className="adm-grid" />
+        <defs>
+          <linearGradient id="admArea" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#c8294f" stopOpacity="0.28" />
+            <stop offset="1" stopColor="#c8294f" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        {[0, 0.25, 0.5, 0.75, 1].map((t) => (
+          <g key={t}>
+            <line x1={pl} x2={W - pr} y1={y(max * t)} y2={y(max * t)} className="adm-grid" />
+            <text x={pl - 10} y={y(max * t) + 4} textAnchor="end" className="adm-axis adm-axis-y">{`${sym}${compact(max * t)}`}</text>
+          </g>
         ))}
         <path d={area} className="adm-area" />
         <path d={path} className="adm-line" />

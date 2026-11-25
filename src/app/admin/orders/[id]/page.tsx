@@ -9,6 +9,7 @@ import { useOrderActions } from "@/components/admin/orderActions";
 import { printHtml } from "@/lib/admin/export";
 import { NEXT_LABEL, hasReturn, payStatus, retId, statusOf, timelineOf } from "@/lib/admin/orders";
 import { invoiceHtml, labelHtml } from "@/lib/admin/print";
+import { sendConfirmation } from "@/lib/orderMessage";
 import { PAY_LABEL, fmtShort, fmtTime, itemMeta, type Address } from "@/lib/orders";
 
 const COURIERS = ["Delhivery", "DHL Express", "FedEx", "Aramex", "India Post"];
@@ -60,6 +61,7 @@ export default function OrderDetail() {
         actions={
           <>
             <Btn variant="ghost" icon="print" onClick={() => printHtml(`Invoice ${o.id}`, invoiceHtml(o))}>Invoice</Btn>
+            <Btn variant="ghost" onClick={() => { if (sendConfirmation(o) === "none") alert("This order has no phone number or email to send to."); }}>Send confirmation</Btn>
             {cancelOk && <Btn variant="danger" onClick={() => setCancelOpen(true)}>Cancel order</Btn>}
             {!cancelled && o.stage === 1 && !can("cancel_packed") && <Btn variant="danger" disabled title={why("cancel_packed")}>Cancel order</Btn>}
             {canMove && NEXT_LABEL[o.stage] && <Btn onClick={next}>{NEXT_LABEL[o.stage]}</Btn>}

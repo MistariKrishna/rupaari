@@ -2774,7 +2774,7 @@ footer.on-dark .link-arrow { color: #e3c783; }
 @keyframes bnavIn { from { opacity: 0; transform: translate(-50%, 24px); } to { opacity: 1; transform: translate(-50%, 0); } }
 @media (prefers-reduced-motion: reduce) { .bnav { animation: none; } .bnav-i, .bnav-i .icon { transition: none; } }
 
-/* /collections: category row (Sarees, Kurtis, Gift Craft) */
+/* /collections: category row (Sarees, Kurtis, Gifting) */
 .co-more { max-width: 1440px; margin-inline: auto; border-top: 1px solid #bba99a; padding: 40px var(--px) 64px; }
 .co-more-title { margin: 0 0 32px; font-family: var(--font-cinzel), "Cinzel", serif; font-size: 24px; font-weight: 400; line-height: 1.2; letter-spacing: 0.04em; color: #680f1a; text-transform: none; }
 .co-more-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 12px; }
@@ -3596,3 +3596,76 @@ button:focus-visible, [role="button"]:focus-visible, .btn:focus-visible, .icon-b
 .cat2-from { margin: 0.55rem 0 0; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(28, 26, 26, 0.6); }
 .cat2-go { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 3rem; height: 3rem; border: 1px solid #680f1a; border-radius: 9999px; color: #680f1a; transition: background-color 0.3s, color 0.3s; }
 .cat2-card:hover .cat2-go { background: #680f1a; color: #f7f1e7; }
+
+/* BUTTON HOVER: the same fill-and-glow as the social icons. The button itself never moves (clicks stay reliable); a colour sweeps up from the bottom, a soft gold ring appears and the arrow pops. */
+.btn, .au-btn {
+  background-image: linear-gradient(#c9a24d, #c9a24d) !important;
+  /* !important: some button styles use the "background" shorthand, which would reset these and paint the whole button */
+  background-repeat: no-repeat !important;
+  background-position: 0 100% !important;
+  background-size: 100% 0 !important;
+  transition: background-size 0.45s cubic-bezier(0.16, 1, 0.3, 1), color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, opacity 0.2s ease;
+}
+.btn.btn-secondary { background-image: linear-gradient(#680f1a, #680f1a) !important; }
+@keyframes btn-arrow-pop { 0% { transform: translateX(-5px) scale(0.75); } 55% { transform: translateX(5px) scale(1.25); } 100% { transform: translateX(2px) scale(1.08); } }
+@media (hover: hover) {
+  .btn:not(:disabled):hover, .au-btn:not(:disabled):hover, .btn:not(:disabled):focus-visible, .au-btn:not(:disabled):focus-visible {
+    background-size: 100% 101% !important;
+    box-shadow: 0 8px 18px -8px rgba(74, 11, 19, 0.5), 0 0 0 4px rgba(201, 162, 77, 0.2);
+  }
+  /* filled wine button: gold fill, dark text */
+  .btn:not(.btn-secondary):not(.btn-light):not(.btn-ghost):not(:disabled):hover, .au-btn:not(.btn-secondary):not(:disabled):hover { color: #4a0b13; border-color: #c9a24d; background-color: #680f1a; }
+  /* outline button: wine fill, ivory text */
+  .btn.btn-secondary:not(:disabled):hover { background-color: transparent; color: #f7f1e7; border-color: #680f1a; }
+  /* buttons on dark bands */
+  .btn.btn-light:not(:disabled):hover { background-color: #f7f1e7; color: #4a0b13; border-color: #c9a24d; }
+  .btn.btn-ghost:not(:disabled):hover { background-color: transparent; color: #4a0b13; border-color: #c9a24d; }
+  .btn:not(:disabled):hover .icon, .au-btn:not(:disabled):hover .icon { animation: btn-arrow-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+}
+@media (prefers-reduced-motion: reduce) { .btn, .au-btn { transition: none; } .btn:hover .icon, .au-btn:hover .icon { animation: none !important; } }
+
+/* SMALL CONTROLS (page numbers, chips, size buttons, round icon buttons, hearts, rail arrows, filter button): the same fill-and-glow */
+:is(.cp-pg:not(.cp-pg--gap), .icon-btn, .chip, .mo-chip, .sz-b, .rail-btn, .pc-heart, .cpc-heart, .cp-filterbtn) {
+  background-image: linear-gradient(#680f1a, #680f1a) !important;
+  background-repeat: no-repeat !important;
+  background-position: 0 100% !important;
+  background-size: 100% 0 !important;
+  transition: background-size 0.45s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.2s ease;
+}
+@media (hover: hover) {
+  :is(.cp-pg:not(.cp-pg--gap), .icon-btn, .chip, .mo-chip, .sz-b, .rail-btn, .pc-heart, .cpc-heart, .cp-filterbtn):not(:disabled):hover {
+    background-size: 100% 101% !important;
+    color: #f7f1e7 !important;
+    border-color: #680f1a !important;
+    box-shadow: 0 6px 14px -8px rgba(74, 11, 19, 0.5), 0 0 0 3px rgba(201, 162, 77, 0.22);
+  }
+  :is(.cp-pg, .icon-btn, .chip, .mo-chip, .sz-b, .rail-btn, .pc-heart, .cpc-heart, .cp-filterbtn):not(:disabled):hover .icon { animation: btn-arrow-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+}
+
+/* LINKS that had no hover (footer, breadcrumbs, small links): a line draws in under the words */
+:is(.cf-col a, .cf-pol a, .cf-legal a, .rp-crumbs a, .mo-foot a:not(.mo-soc), .au-alt a, .au-link) {
+  width: fit-content;
+  align-self: flex-start;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0 1px;
+  padding-bottom: 2px;
+  text-decoration: none;
+  transition: background-size 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s ease;
+}
+@media (hover: hover) {
+  :is(.cf-col a, .cf-pol a, .cf-legal a, .rp-crumbs a, .mo-foot a:not(.mo-soc), .au-alt a, .au-link):hover { background-size: 100% 1px; color: #680f1a; text-decoration: none; }
+}
+@media (prefers-reduced-motion: reduce) { :is(.cf-col a, .cf-pol a, .cf-legal a, .rp-crumbs a) { transition: none; } }
+
+/* ---------- order confirmed message ---------- */
+.oc-toast { position: fixed; z-index: 90; top: 84px; left: 50%; display: flex; align-items: center; gap: 12px; max-width: calc(100vw - 32px); padding: 12px 16px; transform: translateX(-50%); background: #4a0b13; color: #f7f1e7; border-radius: 4px; box-shadow: 0 14px 34px rgba(28, 26, 26, 0.28); font: 500 14px/1.4 Montserrat, sans-serif; animation: oc-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.oc-toast-t { display: grid; width: 26px; height: 26px; flex: none; place-items: center; border-radius: 999px; background: #c9a24d; color: #4a0b13; }
+.oc-toast-t .icon { width: 15px; height: 15px; }
+.oc-toast-x { background: none; border: 0; color: inherit; font-size: 22px; line-height: 1; cursor: pointer; opacity: 0.7; }
+.oc-toast-x:hover { opacity: 1; }
+@keyframes oc-in { from { opacity: 0; transform: translate(-50%, -14px); } to { opacity: 1; transform: translate(-50%, 0); } }
+.oc-msg { padding: 16px 18px; background: #fbf7ef; border: 1px solid #e6dccb; border-left: 3px solid #c9a24d; }
+.oc-msg pre { margin: 0 0 10px; white-space: pre-wrap; font: 400 14px/1.65 Montserrat, sans-serif; color: #1c1a1a; }
+@media (prefers-reduced-motion: reduce) { .oc-toast { animation: none; } }

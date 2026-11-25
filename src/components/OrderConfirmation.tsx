@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { colourway, fmtDate, itemKey } from "@/lib/orders";
+import { confirmationText } from "@/lib/orderMessage";
 import { money } from "@/lib/products";
 import Crumbs from "./Crumbs";
 import { Icon } from "./Icon";
@@ -13,6 +15,12 @@ export default function OrderConfirmation() {
   const id = useSearchParams().get("order");
   const { orders, ready } = useOrders();
   const o = orders.find((x) => x.id === id);
+  const [toast, setToast] = useState(true);
+  const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setToast(false), 6000);
+    return () => clearTimeout(t);
+  }, []);
 
   if (ready && !o) {
     return (
@@ -24,8 +32,20 @@ export default function OrderConfirmation() {
   }
   if (!o) return <div className="rp-page" />;
 
+  const msg = confirmationText(o);
+  const copy = () => {
+    try { navigator.clipboard.writeText(msg).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); }); } catch { /* ignore */ }
+  };
+
   return (
     <div className="rp-page">
+      {toast && (
+        <div className="oc-toast" role="status" aria-live="polite">
+          <span className="oc-toast-t"><Icon name="check" /></span>
+          <span><strong>Order confirmed.</strong> Thank you, your order #{o.id} has been placed.</span>
+          <button type="button" className="oc-toast-x" aria-label="Close" onClick={() => setToast(false)}>×</button>
+        </div>
+      )}
       <div className="rp-wrap">
         <Crumbs items={[{ label: "Home", href: "/" }, { label: "Order confirmation" }]} />
         <header className="od-top">
@@ -51,6 +71,13 @@ export default function OrderConfirmation() {
                   </li>
                 ))}
               </ul>
+            </section>
+            <section aria-labelledby="oc-msg" className="od-addr-sec">
+              <h2 className="rp-h2" id="oc-msg">Confirmation message</h2>
+              <div className="oc-msg">
+                <pre>{msg}</pre>
+                <button type="button" className="rp-link" onClick={copy}>{copied ? "Copied" : "Copy message"}</button>
+              </div>
             </section>
             <section aria-labelledby="oc-addr" className="od-addr-sec">
               <h2 className="rp-h2" id="oc-addr">Delivery address</h2>
