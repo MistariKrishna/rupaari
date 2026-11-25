@@ -45,7 +45,8 @@ export function PaymentSummary({ o, refunded = false, children, confirm = false 
       <dl className="rp-rows rp-rows--lg">
         <div><dt>Payment method</dt><dd>{PAY_LABEL[o.payment]}</dd></div>
         <div className="rp-sep"><dt>Subtotal</dt><dd>{money(o.subtotal)}</dd></div>
-        <div><dt>Shipping</dt><dd>{money(o.shipping)}</dd></div>
+        {o.discount ? <div><dt>Discount{o.coupon ? ` (${o.coupon})` : ""}</dt><dd>−{money(o.discount)}</dd></div> : null}
+        <div><dt>Shipping</dt><dd>{o.shipping ? money(o.shipping) : "Free"}</dd></div>
         <div className="rp-bold rp-total"><dt>{confirm && o.payment === "cod" ? "Due on delivery" : totalLabel(o, refunded)}</dt><dd>{money(o.total)}</dd></div>
       </dl>
       {children}

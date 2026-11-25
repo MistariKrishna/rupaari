@@ -33,8 +33,11 @@ const cols = [
     links: [
       { label: "Contact Us", href: "/contact" },
       { label: "Book a Consultation", href: "/contact" },
+      { label: "Track Order", href: "/account/track" },
+      { label: "Returns & Refunds", href: "/account/returns" },
       { label: "Wishlist", href: "/wishlist" },
-      { label: "Account", href: "/account" },
+      { label: "My Account", href: "/account" },
+      { label: "My Profile", href: "/account/profile" },
     ],
   },
 ];

@@ -26,7 +26,7 @@ type Step = 1 | 2 | 3;
 export default function CheckoutClient() {
   const router = useRouter();
   const { lines, subtotal, clear, ready } = useStore();
-  const { add } = useOrders();
+  const { add } = useOrders(false);
   const { user, ready: sessionReady } = useSession();
 
   const [step, setStep] = useState<Step>(1);
@@ -126,6 +126,7 @@ export default function CheckoutClient() {
       items: items.map(({ l, p }) => ({ id: p.id, name: p.name, price: p.price, qty: l.qty, colour: l.colour || p.details?.colour || colourway(p.tone), tone: p.tone, ...(l.size ? { size: l.size } : {}) })),
       address: addr,
       contact,
+      userId: user.id,
       payment: pay,
       subtotal,
       shipping: freeShip && indiaOnly(addr.country) ? 0 : shippingFor(addr.country),

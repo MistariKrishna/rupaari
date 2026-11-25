@@ -86,7 +86,7 @@ export default function OrderConfirmation() {
             </section>
           </div>
           <PaymentSummary o={o} confirm>
-            <Link href={`/account/orders/${o.id}`} className="btn w-full">Track order</Link>
+            <Link href={`/account/track?order=${o.id}`} className="btn w-full">Track order</Link>
             <Link href="/collections" className="rp-link od-cont">Continue shopping</Link>
           </PaymentSummary>
         </div>

@@ -3669,3 +3669,50 @@ button:focus-visible, [role="button"]:focus-visible, .btn:focus-visible, .icon-b
 .oc-msg { padding: 16px 18px; background: #fbf7ef; border: 1px solid #e6dccb; border-left: 3px solid #c9a24d; }
 .oc-msg pre { margin: 0 0 10px; white-space: pre-wrap; font: 400 14px/1.65 Montserrat, sans-serif; color: #1c1a1a; }
 @media (prefers-reduced-motion: reduce) { .oc-toast { animation: none; } }
+
+/* ---------- account: track order and returns pages ---------- */
+.tk-form { display: grid; gap: 16px; max-width: 520px; margin-top: 24px; padding: 24px; }
+.tk-form .btn { justify-self: start; }
+.tk-err { margin: 0; color: #680f1a; font-size: 14px; }
+.tk-recent { margin-top: 28px; max-width: 520px; }
+.tk-recent ul, .rt-open ul { margin: 10px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.tk-recent li, .rt-open li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 14px; padding: 10px 0; border-bottom: 1px solid #e3d9cc; font-size: 14px; }
+.tk-result { margin-top: 36px; padding-top: 28px; border-top: 1px solid #d3c7bc; display: grid; gap: 20px; }
+.tk-result .btn { justify-self: start; }
+.tk-addr { margin: 0; font-size: 14px; color: #4a0b13; }
+.rt-sum { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 24px 0; }
+.rt-sum div { padding: 14px 16px; border: 1px solid #d3c7bc; background: #f7f1e7; }
+.rt-sum dt { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #6b5d52; }
+.rt-sum dd { margin: 4px 0 0; font-family: var(--font-cinzel), "Cinzel", serif; font-size: 22px; color: #680f1a; }
+.rt-steps { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; margin: 18px 0 0; padding: 14px 0 0; border-top: 1px solid #e3d9cc; list-style: none; font-size: 12px; text-align: center; color: #8d7f73; }
+.rt-steps li { display: grid; justify-items: center; gap: 6px; }
+.rt-dot { width: 12px; height: 12px; border-radius: 999px; border: 1.5px solid #bba99a; background: transparent; }
+.rt-steps li[data-done="true"] { color: #1c1a1a; }
+.rt-steps li[data-done="true"] .rt-dot { background: #680f1a; border-color: #680f1a; }
+.rt-steps li[data-current="true"] .rt-dot { box-shadow: 0 0 0 4px rgba(104, 15, 26, 0.15); }
+.rt-note { margin: 12px 0 0; font-size: 14px; }
+.rt-note small { color: #6b5d52; margin-left: 6px; }
+.rt-open { margin-top: 36px; }
+@media (max-width: 600px) { .rt-sum { grid-template-columns: 1fr; } .rt-steps { font-size: 11px; } }
+
+/* ---------- account: profile ---------- */
+.pf-top { display: flex; align-items: center; gap: 18px; margin: 24px 0; padding: 20px 24px; }
+.pf-top h2 { margin: 0; font-family: var(--font-cormorant), "Cormorant Garamond", serif; font-size: 28px; font-weight: 500; text-transform: none; letter-spacing: 0; color: #680f1a; }
+.pf-top p { margin: 2px 0 0; font-size: 14px; }
+.pf-av { display: grid; flex: none; width: 56px; height: 56px; place-items: center; border-radius: 999px; background: #680f1a; color: #f7f1e7; font-family: var(--font-cinzel), "Cinzel", serif; font-size: 24px; }
+.pf-grid { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+.pf-card { display: grid; gap: 16px; padding: 24px; }
+.pf-card .btn { justify-self: start; }
+.pf-two { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
+.pf-ok { margin: 0; color: #2f6b3a; font-size: 14px; }
+.rp-field input[readonly] { background: #efe7da; color: #6b5d52; cursor: not-allowed; }
+@media (min-width: 720px) { .pf-two { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1000px) { .pf-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ---------- order details page ---------- */
+.od-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+.od-strip { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; margin: 28px 0; border: 1px solid #d3c7bc; background: #d3c7bc; }
+.od-strip > div { padding: 14px 16px; background: #f7f1e7; }
+.od-strip dt { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #6b5d52; }
+.od-strip dd { margin: 4px 0 0; font-size: 15px; font-weight: 500; color: #1c1a1a; }
+@media (min-width: 860px) { .od-strip { grid-template-columns: repeat(4, minmax(0, 1fr)); } }

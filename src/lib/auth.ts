@@ -8,8 +8,16 @@ export interface User {
   /** email or +country-code mobile number */
   id: string;
 }
+/** Extra details a customer can keep on their profile. */
+export interface Profile {
+  /** the other way to reach them: a mobile number when they sign in by email, an email when they use a mobile */
+  altContact?: string;
+  dob?: string;
+  gender?: string;
+}
 interface Stored extends User {
   hash: string;
+  profile?: Profile;
 }
 
 const USERS = "rupaari.users";
@@ -118,3 +126,39 @@ export async function signInWithProvider(provider: Provider): Promise<{ ok: bool
 
 /** Only follow same-site paths from ?next= */
 export const safeNext = (n: string | null, fallback = "/account") => (n && n.startsWith("/") && !n.startsWith("//") ? n : fallback);
+
+/* ---------- profile ---------- */
+export const getProfile = (id: string): Profile => readUsers().find((u) => u.id === id)?.profile ?? {};
+export const hasPassword = (id: string) => readUsers().some((u) => u.id === id);
+
+/** Saves the name and extra details, and keeps the signed-in session in step. */
+export function updateProfile(id: string, name: string, profile: Profile): { ok: boolean; message?: string } {
+  if (!name.trim()) return { ok: false, message: "Enter your name." };
+  const users = readUsers();
+  const u = users.find((x) => x.id === id);
+  if (u) {
+    u.name = name.trim();
+    u.profile = profile;
+    writeUsers(users);
+  }
+  try {
+    const store = sessionStorage.getItem(SESSION) ? sessionStorage : localStorage;
+    store.setItem(SESSION, JSON.stringify({ name: name.trim(), id }));
+  } catch {
+    /* ignore */
+  }
+  window.dispatchEvent(new Event(SESSION_EVENT));
+  return { ok: true };
+}
+
+export async function changePassword(id: string, current: string, next: string): Promise<{ ok: boolean; message?: string }> {
+  if (!DEMO) return NOT_LIVE;
+  const users = readUsers();
+  const u = users.find((x) => x.id === id);
+  if (!u) return { ok: false, message: "This account signed in with Google, Apple or Facebook, so there is no password to change." };
+  if (u.hash !== (await hash(id, current))) return { ok: false, message: "Your current password is not right." };
+  if (!isPassword(next)) return { ok: false, message: "Use at least 8 characters for the new password." };
+  u.hash = await hash(id, next);
+  writeUsers(users);
+  return { ok: true };
+}

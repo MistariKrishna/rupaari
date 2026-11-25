@@ -18,7 +18,10 @@ export default function AccountHome() {
   if (!user) return <div className="rp-page" />;
 
   const cards = [
-    { href: "/account/orders", icon: "bag" as const, t: "My orders", d: "Track orders, request returns." },
+    { href: "/account/profile", icon: "user" as const, t: "My profile", d: "View and change your details, address and password." },
+    { href: "/account/orders", icon: "bag" as const, t: "My orders", d: "View details and invoices of every order." },
+    { href: "/account/track", icon: "truck" as const, t: "Track an order", d: "See where your saree is, step by step." },
+    { href: "/account/returns", icon: "return" as const, t: "Returns and refunds", d: "Request a return on a delivered order." },
     { href: "/wishlist", icon: "heart" as const, t: "Wishlist", d: "Sarees you’ve saved for later." },
     { href: "/contact", icon: "calendar" as const, t: "Bridal consultation", d: "Book a time with our team." },
   ];

@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { DEMO } from "@/lib/checkout";
-import { RETURN_STEPS, STAGES, fmtDate, itemKey, sameItem, fmtShort, fmtTime, refundAmount, returnState, type Order, type OrderItem, type ReturnStatus } from "@/lib/orders";
+import { printHtml } from "@/lib/admin/export";
+import { invoiceHtml } from "@/lib/admin/print";
+import { DEMO, indiaOnly } from "@/lib/checkout";
+import { PAY_LABEL, RETURN_STEPS, STAGES, fmtDate, itemKey, sameItem, fmtShort, fmtTime, refundAmount, returnState, type Order, type OrderItem, type ReturnStatus } from "@/lib/orders";
 import { money } from "@/lib/products";
 import Crumbs from "./Crumbs";
 import { Icon } from "./Icon";
@@ -59,6 +61,13 @@ export default function OrderDetail({ id }: { id: string }) {
   const pickup = o.items.some((i) => i.return && ["approved", "picked-up", "received"].includes(i.return.status));
   const refundTotal = o.items.reduce((n, i) => n + refundAmount(i), 0);
 
+  const eta = (() => {
+    const [a, b] = indiaOnly(o.address.country) ? [4, 7] : [9, 14];
+    const f = (n: number) => fmtShort(new Date(new Date(o.placedAt).getTime() + n * 86_400_000).toISOString());
+    return `${f(a)} to ${f(b)}`;
+  })();
+  const payNote = o.payment === "cod" ? (o.stage === 4 ? "Paid on delivery" : "Pay on delivery") : "Paid";
+
   return (
     <div className="rp-page">
       <div className="rp-wrap">
@@ -66,7 +75,18 @@ export default function OrderDetail({ id }: { id: string }) {
         <header className="od-top">
           <h1 className="rp-title">Order #{o.id}</h1>
           <p className="od-lead">{placed(o)}</p>
+          <div className="od-actions">
+            <button type="button" className="btn btn-secondary" onClick={() => printHtml(`Invoice ${o.id}`, invoiceHtml(o))}>Download invoice</button>
+            <Link href={`/account/track?order=${o.id}`} className="btn btn-secondary">Track order</Link>
+          </div>
         </header>
+
+        <dl className="od-strip">
+          <div><dt>Order status</dt><dd>{STAGES[o.stage]}</dd></div>
+          <div><dt>{o.stage === 4 ? "Delivered on" : "Expected delivery"}</dt><dd>{o.stage === 4 ? fmtDate(o.deliveredAt ?? o.placedAt) : eta}</dd></div>
+          <div><dt>Payment</dt><dd>{PAY_LABEL[o.payment]} · {payNote}</dd></div>
+          <div><dt>Order total</dt><dd>{money(o.total)}</dd></div>
+        </dl>
 
         <section className="od-status" aria-labelledby="od-st">
           <h2 className="rp-h3" id="od-st">Order status</h2>
@@ -113,6 +133,12 @@ export default function OrderDetail({ id }: { id: string }) {
                 })}
               </ul>
             </section>
+            {o.gift && (
+              <section className="od-addr-sec" aria-labelledby="od-gift">
+                <h2 className="rp-h2" id="od-gift">Gift note</h2>
+                <p className="od-gift">{o.gift}</p>
+              </section>
+            )}
             <section aria-labelledby="od-addr" className="od-addr-sec" id="pickup-address">
               <h2 className="rp-h2" id="od-addr">{pickup ? "Delivery & pickup address" : "Delivery address"}</h2>
               <AddressBlock o={o} />

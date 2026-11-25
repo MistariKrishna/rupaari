@@ -26,13 +26,44 @@ export const downloadXls = (name: string, rows: unknown[][]) =>
 
 /** Open a print-ready page (invoice, label) in a new window. */
 export const printHtml = (title: string, body: string) => {
-  const w = window.open("", "_blank", "width=820,height=900");
+  const w = window.open("", "_blank", "width=860,height=960");
   if (!w) return false;
   w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(title)}</title><style>
-body{font:14px/1.5 system-ui,sans-serif;color:#1c1a1a;margin:32px}h1{font:500 22px Georgia,serif;letter-spacing:.12em;color:#680f1a;margin:0}
-table{width:100%;border-collapse:collapse;margin:16px 0}th,td{border-bottom:1px solid #ddd;padding:8px;text-align:left}td.r,th.r{text-align:right}
-.muted{color:#6f6560}.box{border:1px dashed #1c1a1a;padding:16px;margin:12px 0}.big{font:500 26px monospace;letter-spacing:.1em}
-@media print{button{display:none}}</style></head><body>${body}<p><button onclick="window.print()">Print</button></p></body></html>`);
+*{box-sizing:border-box}
+body{font:14px/1.55 "Montserrat",system-ui,-apple-system,"Segoe UI",sans-serif;color:#1c1a1a;margin:0;background:#efe9de;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.sheet{max-width:780px;margin:24px auto;padding:44px 48px 40px;background:#fffdf9;border-top:6px solid #680f1a;box-shadow:0 10px 40px rgba(28,26,26,.12)}
+.doc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.logo img{display:block;height:48px;width:auto;max-width:240px}
+.logo-fb{font:500 28px Georgia,"Times New Roman",serif;letter-spacing:.28em;color:#680f1a}
+.doc-title{text-align:right}
+.doc-title h1{margin:0 0 6px;font:500 13px "Montserrat",system-ui,sans-serif;letter-spacing:.28em;text-transform:uppercase;color:#680f1a}
+.doc-title p{margin:0;font-size:13px;color:#6f6560}.doc-title b{color:#1c1a1a}
+.rule{height:2px;margin:22px 0 26px;background:linear-gradient(90deg,#c9a24d,#c9a24d 40%,rgba(201,162,77,.15))}
+h2{margin:0 0 8px;font:600 11px "Montserrat",system-ui,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#a07f2f}
+p{margin:0}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:28px}
+.cols p{font-size:14px}
+table{width:100%;border-collapse:collapse}
+.items{margin-bottom:6px}
+.items th{background:#680f1a;color:#f7f1e7;font:600 11px "Montserrat",system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;padding:11px 12px;text-align:left}
+.items td{padding:14px 12px;border-bottom:1px solid #e8dfd0;vertical-align:top}
+.items tbody tr:nth-child(even) td{background:#faf5ec}
+td.r,th.r{text-align:right}
+.sum{width:290px;margin:14px 0 0 auto}
+.sum td{padding:7px 12px;font-size:14px}
+.sum .grand td{border-top:2px solid #680f1a;padding-top:12px;font:600 18px "Montserrat",system-ui,sans-serif;color:#680f1a}
+.muted{color:#6f6560}.small{font-size:12.5px;margin-top:18px}
+.doc-foot{margin-top:34px;padding-top:16px;border-top:1px solid #e8dfd0;text-align:center;font-size:12.5px;color:#6f6560}
+.doc-foot b{color:#680f1a;font:500 15px Georgia,serif;letter-spacing:.04em}
+.box{border:1.5px dashed #680f1a;padding:18px 20px;margin:16px 0}
+.addr{font-size:17px;line-height:1.6}
+.big{font:600 28px ui-monospace,Consolas,monospace;letter-spacing:.1em;color:#1c1a1a}
+.actions{max-width:780px;margin:0 auto 28px;text-align:right}
+.actions button{padding:11px 22px;border:0;border-radius:2px;background:#680f1a;color:#f7f1e7;font:600 12px "Montserrat",system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
+.actions button:hover{background:#4a0b13}
+@media print{body{background:#fff}.sheet{margin:0;max-width:none;box-shadow:none}.actions{display:none}@page{margin:12mm}}
+@media (max-width:560px){.sheet{padding:28px 22px}.cols{grid-template-columns:1fr}.doc-head{flex-direction:column}.doc-title{text-align:left}}
+</style></head><body><div class="sheet">${body}</div><div class="actions"><button onclick="window.print()">Print or save as PDF</button></div></body></html>`);
   w.document.close();
   return true;
 };

@@ -10,9 +10,11 @@ import Crumbs from "./Crumbs";
 import { Icon } from "./Icon";
 import { Thumb } from "./OrderParts";
 import { useOrders } from "./useOrders";
+import { useSession } from "./useSession";
 
 export default function OrdersList() {
   const { orders, ready } = useOrders();
+  const { user } = useSession();
   const sp = useSearchParams();
   const router = useRouter();
 
@@ -20,10 +22,10 @@ export default function OrdersList() {
   useEffect(() => {
     if (DEMO && sp.get("seed") === "1") {
       const existing = loadOrders();
-      saveOrders([demoOrder(nextOrderId(existing)), ...existing]);
+      saveOrders([{ ...demoOrder(nextOrderId(existing)), userId: user?.id }, ...existing]);
       router.replace("/account/orders");
     }
-  }, [sp, router]);
+  }, [sp, router, user]);
 
   return (
     <div className="rp-page">
@@ -34,7 +36,7 @@ export default function OrdersList() {
           <div className="rp-empty">
             <Icon name="bag" />
             <h2>No orders yet</h2>
-            <p>Orders you place on this device will appear here.</p>
+            <p>Orders you place with this account will appear here.</p>
             <Link href="/collections/sarees" className="btn">Explore Sarees</Link>
           </div>
         ) : (

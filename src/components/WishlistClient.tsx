@@ -40,7 +40,7 @@ export default function WishlistClient() {
           </Link>
         </div>
         <p className="wl-guest">
-          <Link href="/account">Sign in</Link> to keep your favourites across devices.
+          <Link href="/login?next=/wishlist">Sign in</Link> to keep your favourites across devices.
         </p>
       </header>
 

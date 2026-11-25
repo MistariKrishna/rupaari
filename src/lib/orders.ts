@@ -50,6 +50,8 @@ export interface Order {
   address: Address;
   /** email or +country-code mobile number the order was placed with */
   contact: string;
+  /** the signed-in account that placed the order */
+  userId?: string;
   payment: PayMethod;
   subtotal: number;
   shipping: number;
