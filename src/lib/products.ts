@@ -1,4 +1,5 @@
 import type { Tone } from "./content";
+import type { KurtiInfo } from "./kurti";
 
 // SAMPLE CATALOGUE. Names, prices and MRPs below are placeholders taken from the
 // design reference. Replace with your real products (or load from your database)
@@ -31,6 +32,8 @@ export interface Product {
   gallery?: { src: string; alt?: string }[];
   /** extra facts from the admin, shown in the product page tabs */
   details?: ProductDetails;
+  /** kurtis: style, neck, sleeve, length, fabric and wear tags */
+  kurti?: KurtiInfo;
   /** colours of the piece (admin-published products): each has its own pictures and stock */
   colours?: ProductColour[];
 }
@@ -176,7 +179,7 @@ export const categoryLabel = (s: CategorySlug) => categories.find((c) => c.slug 
 export const weaveShort = (s?: WeaveSlug) => weaveFilters.find((w) => w.slug === s)?.label;
 
 /** Size labels offered on kurtis. Sarees have no size. */
-export const KURTI_SIZES = ["S", "M", "L", "XL", "XXL", "XXXL"];
+export const KURTI_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
 export const hasSizes = (p: Pick<Product, "category">) => p.category === "kurtis";
 export const sizesFor = (p: Pick<Product, "category" | "soldOutSizes">) =>
   hasSizes(p) ? KURTI_SIZES.map((label) => ({ label, available: !(p.soldOutSizes ?? []).includes(label) })) : [];

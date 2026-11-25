@@ -4,6 +4,7 @@ import { KURTI_SIZES, type CategorySlug, type OccasionSlug, type WeaveSlug } fro
 import type { Tone } from "@/lib/content";
 import type { AdminProduct, ProductImage, StockRow } from "./types";
 import { blankProduct } from "./seed";
+import { WEAR } from "@/lib/kurti";
 
 export const DEMO_PREFIX = "demo-";
 export const isDemo = (id: string) => id.startsWith(DEMO_PREFIX);
@@ -180,8 +181,25 @@ const SAREE_WEAVES: { slug: WeaveSlug; label: string; coll: string; region: stri
   { slug: "venkatagiri", label: "Venkatagiri", coll: "uppada", region: "Venkatagiri, Andhra Pradesh", lo: 5500, hi: 12000 },
 ];
 const SAREE_STYLES = ["Temple Border", "Peacock Motif", "Zari Checks", "Buta Pallu", "Pure Zari Tissue"];
-const KURTI_STYLES: [string, number][] = [["Straight", 0], ["A-line", 14], ["Anarkali", 38], ["Angrakha", 10], ["Kalidar", 30], ["Long Jacket", 6], ["Pathani", 0], ["Tiered", 24]];
-const KURTI_FABRICS = ["Silk", "Cotton Silk", "Chanderi", "Banarasi", "Linen"];
+// [name, flare, style slug, usual length, usual neck choices, usual sleeve choices]
+const KURTI_STYLES: [string, number, string, string, string[], string[]][] = [
+  ["Straight Cut", 0, "straight", "knee", ["round", "v", "mandarin", "notch"], ["three-quarter", "long", "short"]],
+  ["A-Line", 14, "a-line", "below-knee", ["round", "scoop", "boat", "v"], ["three-quarter", "elbow", "flared"]],
+  ["Anarkali", 38, "anarkali", "floor", ["round", "sweetheart", "keyhole", "high"], ["long", "three-quarter", "bell"]],
+  ["Angrakha Anarkali", 30, "angrakha-anarkali", "ankle", ["angrakha", "collar"], ["long", "three-quarter"]],
+  ["Kaftan", 20, "kaftan", "calf", ["boat", "round", "cowl"], ["bell", "cap", "balloon"]],
+  ["Jacket", 6, "jacket-cape", "calf", ["collar", "mandarin", "v"], ["long", "sleeveless", "cape"]],
+  ["Peplum", 10, "peplum", "hip", ["square", "sweetheart", "v"], ["puff", "cap", "short"]],
+  ["Tunic", 4, "tunic", "short", ["round", "tie-up", "yoke"], ["short", "half", "ruffle"]],
+];
+// [name used in titles, fabric group, fabric type]
+const KURTI_FABRICS: [string, string, string][] = [
+  ["Cotton", "cotton", "pure-cotton"],
+  ["Chanderi", "silk", "chanderi-silk"],
+  ["Rayon", "rayon", "rayon-slub"],
+  ["Georgette", "georgette", "pure-georgette"],
+  ["Banarasi", "silk", "banarasi-silk"],
+];
 const GIFT_KINDS: { label: Kind; name: string; lo: number; hi: number }[] = [
   { label: "box", name: "Gift Box", lo: 650, hi: 3800 },
   { label: "potli", name: "Potli Bag", lo: 450, hi: 2400 },
@@ -190,6 +208,16 @@ const GIFT_KINDS: { label: Kind; name: string; lo: number; hi: number }[] = [
 const GIFT_ADJ = ["Silk", "Brocade", "Velvet", "Zari", "Festive", "Wedding", "Diwali", "Heritage", "Classic", "Royal"];
 const OCC: OccasionSlug[][] = [["wedding", "festive"], ["festive"], ["wedding"], ["office", "festive"], ["gifting", "festive"]];
 
+/** a few wear tags: always the group matching the fabric, plus two others, so every group is covered across the catalogue */
+const wearFor = (i: number, fabricGroup: string, r: () => number): string[] => {
+  const base = fabricGroup === "cotton" || fabricGroup === "rayon" ? [0, 1] : fabricGroup === "silk" ? [3, 4, 5] : [2, 3];
+  const groups = new Set<number>([base[i % base.length]!, i % 7, (i + 3) % 7]);
+  return [...groups].flatMap((g) => {
+    const items = WEAR[g]!.items;
+    const a = items[Math.floor(r() * items.length)]!;
+    return [WEAR[g]!.items[0]!.slug, a.slug];
+  }).filter((v, k, arr) => arr.indexOf(v) === k);
+};
 const roundTo = (n: number, step: number) => Math.round(n / step) * step;
 
 function pickColours(r: () => number, n: number): Col[] {
@@ -201,7 +229,7 @@ function pickColours(r: () => number, n: number): Col[] {
   return out;
 }
 
-interface Spec { category: CategorySlug; kind: Kind; name: string; weave?: WeaveSlug; collection: string; region: string; price: number; m: number; flare: number; fabric: string; style: string }
+interface Spec { kStyle?: string; kLength?: string; kNecks?: string[]; kSleeves?: string[]; kFabric?: [string, string, string]; category: CategorySlug; kind: Kind; name: string; weave?: WeaveSlug; collection: string; region: string; price: number; m: number; flare: number; fabric: string; style: string }
 
 function specs(): Spec[] {
   const out: Spec[] = [];
@@ -211,10 +239,10 @@ function specs(): Spec[] {
       out.push({ category: "sarees", kind: "saree", name: `${w.label} ${st} Saree`, weave: w.slug, collection: w.coll, region: w.region, price: roundTo(w.lo + (w.hi - w.lo) * (si / 4 * 0.7 + r() * 0.3), 500), m: si % 4, flare: 0, fabric: "Silk", style: st });
     }),
   );
-  KURTI_STYLES.forEach(([st, flare], si) =>
+  KURTI_STYLES.forEach(([st, flare, slugS, len, necks, sleeves], si) =>
     KURTI_FABRICS.forEach((fb, fi) => {
       const r = rng(si * 17 + fi * 5 + 101);
-      out.push({ category: "kurtis", kind: "kurti", name: `${fb} ${st} Kurti`, collection: "kurtis-silk", region: "", price: roundTo(1400 + r() * 3800 + fi * 220, 50), m: (si + fi) % 4, flare, fabric: fb, style: st });
+      out.push({ category: "kurtis", kind: "kurti", name: `${fb[0]} ${st} Kurti`, collection: "kurtis-silk", region: "", price: roundTo(1400 + r() * 3800 + fi * 220, 50), m: (si + fi) % 4, flare, fabric: fb[0], style: st, kStyle: slugS, kLength: len, kNecks: necks, kSleeves: sleeves, kFabric: fb });
     }),
   );
   GIFT_KINDS.forEach((k, ki) =>
@@ -250,7 +278,7 @@ export function demoCatalogue(): { products: AdminProduct[]; stock: StockRow[] }
       id,
       slug: id,
       name: s.name,
-      shortLine: s.category === "sarees" ? `${s.style} in handwoven silk` : kurti ? `${s.fabric} ${s.style.toLowerCase()} cut` : "Wrapped and ready to gift",
+      shortLine: s.category === "sarees" ? `${s.style} in handwoven silk` : kurti ? `${s.fabric} ${s.style.toLowerCase()} kurti` : "Wrapped and ready to gift",
       description: desc,
       story: s.region ? `Woven by weaver families of ${s.region}, where this design has been made for generations.` : "",
       status: "live",
@@ -259,6 +287,17 @@ export function demoCatalogue(): { products: AdminProduct[]; stock: StockRow[] }
       weave: s.weave,
       region: s.region,
       zariType: s.category === "sarees" ? "Silver-gold zari" : "",
+      ...(kurti
+        ? {
+            style: s.kStyle,
+            neck: s.kNecks![Math.floor(r() * s.kNecks!.length)],
+            sleeve: s.kSleeves![Math.floor(r() * s.kSleeves!.length)],
+            length: s.kLength,
+            fabricGroup: s.kFabric![1],
+            fabricType: s.kFabric![2],
+            wearTags: wearFor(i, s.kFabric![1], r),
+          }
+        : {}),
       border: s.category === "sarees" ? s.style : "",
       occasions: OCC[i % OCC.length]!,
       silkMark: s.category === "sarees",

@@ -6,7 +6,9 @@ import { Icon } from "./Icon";
 import ProductCard from "./ProductCard";
 import Reveal from "./Reveal";
 import SplitText from "./SplitText";
+import Media from "./Media";
 import { useCatalog } from "@/lib/catalog";
+import { STYLES, WEAR, wearGroupsOf } from "@/lib/kurti";
 import { discountPct, money, type CategorySlug } from "@/lib/products";
 import { TEXT_DEFAULTS as D, useText } from "@/lib/siteContent";
 
@@ -105,4 +107,79 @@ export function FromPrice({ category }: { category: CategorySlug }) {
   const prices = catalog.filter((p) => p.category === category).map((p) => p.price);
   if (!prices.length) return null;
   return <p className="mb-1 text-[11px] uppercase tracking-[.22em] text-ivory/80">From {money(Math.min(...prices))}</p>;
+}
+
+const RING_TONES = ["wine", "burgundy", "gold", "taupe", "ivory"] as const;
+
+/** Home "Kurtis" section: the newest kurtis, then ways to shop them (style and occasion). Hidden until a kurti is published. */
+export function KurtiShowcase() {
+  const catalog = useCatalog();
+  const kurtis = catalog.filter((p) => p.category === "kurtis");
+  if (kurtis.length === 0) return null;
+  const rail = [...kurtis].sort((a, b) => Number(b.badge === "New") - Number(a.badge === "New")).slice(0, 8);
+  const styles = STYLES.filter((st) => kurtis.some((p) => p.kurti?.style === st.slug)).slice(0, 10);
+  const wears = WEAR.filter((g) => kurtis.some((p) => wearGroupsOf(p.kurti?.wear).includes(g.slug)));
+  return (
+    <section className="sec-1 py-[clamp(3rem,6vw,5.5rem)]" aria-labelledby="kurti-title">
+      <div className="container-x">
+        <div className="mb-10 flex flex-wrap items-end justify-between gap-5">
+          <div>
+            <Reveal><p className="h-eyebrow mb-4">Kurtis</p></Reveal>
+            <SplitText as="h2" id="kurti-title" text="Kurtis for every day and every occasion" className="h-display" />
+          </div>
+          <Reveal variant="fade" delay={150}>
+            <Link href="/collections/kurtis" className="link-arrow">Shop all kurtis <Icon name="arrow-right" /></Link>
+          </Reveal>
+        </div>
+      </div>
+      <ArrivalsRail label="Kurtis, scroll sideways">
+        {rail.map((p) => (
+          <div key={p.id} className="snap-item">
+            <ProductCard product={p} detailed />
+          </div>
+        ))}
+        <div className="snap-item snap-end">
+          <Link href="/collections/kurtis" className="snap-all group">
+            <span className="f-serif text-[2rem] leading-tight text-wine">All kurtis</span>
+            <span className="mt-4 inline-flex h-14 w-14 items-center justify-center rounded-full border border-burgundy text-burgundy transition-colors group-hover:bg-burgundy group-hover:text-ivory">
+              <Icon name="arrow-right" />
+            </span>
+          </Link>
+        </div>
+      </ArrivalsRail>
+      <div className="container-x">
+        {styles.length > 0 && (
+          <div className="mt-[clamp(2.5rem,5vw,4rem)]">
+            <p className="h-eyebrow mb-6">Shop kurtis by style</p>
+            <ul className="m-0 grid list-none grid-cols-3 gap-x-4 gap-y-9 p-0 sm:grid-cols-5 lg:grid-cols-10">
+              {styles.map((st, i) => (
+                <li key={st.slug}>
+                  <Reveal delay={(i % 10) * 50}>
+                    <Link href={`/collections/kurtis?style=${st.slug}`} className="group block text-center">
+                      <div className="weave-ring zoom">
+                        <Media tone={RING_TONES[i % RING_TONES.length]} className="aspect-square w-full" sizes="(min-width: 1024px) 10vw, 30vw" />
+                      </div>
+                      <p className="mt-4 text-[12px] font-medium uppercase leading-snug tracking-[.12em] text-wine transition-colors group-hover:text-burgundy">{st.label}</p>
+                    </Link>
+                  </Reveal>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {wears.length > 0 && (
+          <div className="mt-[clamp(2.5rem,5vw,4rem)]">
+            <p className="h-eyebrow mb-6">Shop kurtis by occasion</p>
+            <ul className="m-0 flex list-none flex-wrap gap-3 p-0">
+              {wears.map((g) => (
+                <li key={g.slug}>
+                  <Link href={`/collections/kurtis?wear=${g.slug}`} className="inline-block border border-burgundy/40 px-5 py-3 text-[12px] uppercase tracking-[.14em] text-wine transition-colors hover:bg-burgundy hover:text-ivory">{g.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </section>
+  );
 }

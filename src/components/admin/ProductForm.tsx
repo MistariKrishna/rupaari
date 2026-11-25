@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { blankProduct, makeSku } from "@/lib/admin/seed";
 import type { AdminProduct, ProductStatus, ProductVariant } from "@/lib/admin/types";
+import { FABRICS, LENGTHS, NECKS, SLEEVES, STYLES, WEAR } from "@/lib/kurti";
 import { KURTI_SIZES, categories, occasions, weaveFilters, type OccasionSlug, type WeaveSlug } from "@/lib/products";
 import { useAdmin } from "./AdminShell";
 import ImageUploader from "./ImageUploader";
@@ -98,7 +99,7 @@ export default function ProductForm({ id }: { id?: string }) {
   const tabs: { id: Tab; label: string }[] = [
     { id: "basics", label: "Basics" },
     { id: "details", label: "Details" },
-    ...(p.category === "kurtis" ? [{ id: "sizes" as Tab, label: "Kurti sizing" }] : []),
+    ...(p.category === "kurtis" ? [{ id: "sizes" as Tab, label: "Kurti details" }] : []),
     { id: "pricing", label: "Pricing and stock" },
     { id: "media", label: `Media (${p.images.length})` },
     { id: "colours", label: `Colours (${(p.colourName.trim() ? 1 : 0) + (p.variants ?? []).length})` },
@@ -185,6 +186,35 @@ export default function ProductForm({ id }: { id?: string }) {
               <span className="adm-hint">Tick only what has been verified for this piece.</span>
             </Field>
           </div>
+        </Card>
+      )}
+
+      {cur === "sizes" && p.category === "kurtis" && (
+        <Card title="Style and fabric">
+          <p className="adm-sub" style={{ marginBottom: 14 }}>These choices power the filters and the Kurtis menu on the store, and appear in the product details.</p>
+          <div className="adm-form">
+            <Field label="Style"><select className="adm-in" value={p.style ?? ""} onChange={(e) => up("style", e.target.value)}><option value="">Not set</option>{STYLES.map((o) => <option key={o.slug} value={o.slug}>{o.label}</option>)}</select></Field>
+            <Field label="Neck"><select className="adm-in" value={p.neck ?? ""} onChange={(e) => up("neck", e.target.value)}><option value="">Not set</option>{NECKS.map((o) => <option key={o.slug} value={o.slug}>{o.label}</option>)}</select></Field>
+            <Field label="Sleeve"><select className="adm-in" value={p.sleeve ?? ""} onChange={(e) => up("sleeve", e.target.value)}><option value="">Not set</option>{SLEEVES.map((o) => <option key={o.slug} value={o.slug}>{o.label}</option>)}</select></Field>
+            <Field label="Length"><select className="adm-in" value={p.length ?? ""} onChange={(e) => up("length", e.target.value)}><option value="">Not set</option>{LENGTHS.map((o) => <option key={o.slug} value={o.slug}>{o.label}{o.inches ? ` (${o.inches} in)` : ""}</option>)}</select></Field>
+            <Field label="Fabric">
+              <select className="adm-in" value={p.fabricGroup ?? ""} onChange={(e) => { up("fabricGroup", e.target.value); up("fabricType", ""); }}><option value="">Not set</option>{FABRICS.map((g) => <option key={g.slug} value={g.slug}>{g.label}</option>)}</select>
+            </Field>
+            <Field label="Fabric type">
+              <select className="adm-in" value={p.fabricType ?? ""} disabled={!p.fabricGroup} onChange={(e) => up("fabricType", e.target.value)}><option value="">Not set</option>{(FABRICS.find((g) => g.slug === p.fabricGroup)?.types ?? []).map((t) => <option key={t.slug} value={t.slug}>{t.label}</option>)}</select>
+            </Field>
+          </div>
+        </Card>
+      )}
+
+      {cur === "sizes" && p.category === "kurtis" && (
+        <Card title="Wear and occasion">
+          <p className="adm-sub" style={{ marginBottom: 14 }}>Tick every occasion this kurti suits. Shoppers filter by the group (Daily & Casual, Party and so on).</p>
+          {WEAR.map((g) => (
+            <Field key={g.slug} label={g.label}>
+              <div className="adm-checks">{g.items.map((i) => <Check key={i.slug} checked={(p.wearTags ?? []).includes(i.slug)} onChange={() => up("wearTags", toggle(p.wearTags ?? [], i.slug))} label={i.label} />)}</div>
+            </Field>
+          ))}
         </Card>
       )}
 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { categoryLabel, money, occasions, sizesFor, weaveLabel, type Product } from "@/lib/products";
 import type { ShopInfo } from "@/lib/catalog";
+import { fabricGroupLabel, lengthLabel, neckLabel, sleeveLabel, styleLabel, wearGroupsOf, WEAR } from "@/lib/kurti";
 
 type Row = [string, string];
 const TABS = ["Product Details", "Fabric & Zari", "Size & Care", "Shipping & Returns"] as const;
@@ -13,10 +14,15 @@ export default function ProductTabs({ p, shop }: { p: Product; shop: ShopInfo })
   const d = p.details ?? {};
   const suits = p.occasions.map((o) => occasions.find((x) => x.slug === o)?.label ?? o).join(", ");
   const sizes = sizesFor(p);
+  const k = p.kurti;
+  const wearNames = k ? WEAR.filter((g) => wearGroupsOf(k.wear).includes(g.slug)).map((g) => g.label).join(", ") : "";
+  const kRows: Row[] = k
+    ? ([["Style", styleLabel(k.style)], ["Neck", neckLabel(k.neck)], ["Sleeve", sleeveLabel(k.sleeve)], ["Length", lengthLabel(k.length)], ["Wear", wearNames]] as [string, string | undefined][]).filter((r): r is Row => !!r[1])
+    : [];
 
   const rows: Record<(typeof TABS)[number], Row[]> = {
-    "Product Details": [["Category", categoryLabel(p.category)], ...(p.weave ? ([["Weave", weaveLabel(p.weave) ?? ""]] as Row[]) : []), ...(d.colour ? ([["Colour", d.colour]] as Row[]) : []), ...(suits ? ([["Suits", suits]] as Row[]) : [])],
-    "Fabric & Zari": [["Fabric", p.fabric], ...(d.zariType ? ([["Zari", d.zariType]] as Row[]) : []), ...(d.border ? ([["Border", d.border]] as Row[]) : []), ...(d.pallu ? ([["Pallu", d.pallu]] as Row[]) : []), ...(d.motifs ? ([["Motifs", d.motifs]] as Row[]) : []), ...(d.weaverCluster ? ([["Woven by", d.weaverCluster]] as Row[]) : []), ...(d.marks?.length ? ([["Marks", d.marks.join(", ")]] as Row[]) : [])],
+    "Product Details": [["Category", categoryLabel(p.category)], ...(p.weave ? ([["Weave", weaveLabel(p.weave) ?? ""]] as Row[]) : []), ...(d.colour ? ([["Colour", d.colour]] as Row[]) : []), ...(suits ? ([["Suits", suits]] as Row[]) : []), ...kRows],
+    "Fabric & Zari": [["Fabric", p.fabric], ...(k?.fabricGroup && fabricGroupLabel(k.fabricGroup) && fabricGroupLabel(k.fabricGroup) !== p.fabric ? ([["Fabric family", fabricGroupLabel(k.fabricGroup) as string]] as Row[]) : []), ...(d.zariType ? ([["Zari", d.zariType]] as Row[]) : []), ...(d.border ? ([["Border", d.border]] as Row[]) : []), ...(d.pallu ? ([["Pallu", d.pallu]] as Row[]) : []), ...(d.motifs ? ([["Motifs", d.motifs]] as Row[]) : []), ...(d.weaverCluster ? ([["Woven by", d.weaverCluster]] as Row[]) : []), ...(d.marks?.length ? ([["Marks", d.marks.join(", ")]] as Row[]) : [])],
     "Size & Care": [
       ...(sizes.length ? ([["Sizes", sizes.map((s) => s.label + (s.available ? "" : " (sold out)")).join(", ")]] as Row[]) : []),
       ...(d.lengthM ? ([["Length", `${d.lengthM} m`]] as Row[]) : []),

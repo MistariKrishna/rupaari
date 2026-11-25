@@ -76,8 +76,8 @@ export const nav = {
     discover: [
       { label: "All Kurtis", href: "/collections/kurtis" },
       { label: "New Arrivals", href: "/collections/kurtis?sort=new" },
-      { label: "Pure Cotton Wear", href: "/collections/kurtis?wear=pure-cotton" },
-      { label: "Silk Wear", href: "/collections/kurtis?wear=silk" },
+      { label: "Pure Cotton Wear", href: "/collections/kurtis?fabric=cotton" },
+      { label: "Silk Wear", href: "/collections/kurtis?fabric=silk" },
       { label: "Daily & Casual Wear", href: "/collections/kurtis?wear=daily-casual" },
       { label: "Professional Wear", href: "/collections/kurtis?wear=professional" },
       { label: "Party Wear", href: "/collections/kurtis?wear=party" },

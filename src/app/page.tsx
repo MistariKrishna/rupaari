@@ -4,7 +4,7 @@ import { Icon } from "@/components/Icon";
 import Media from "@/components/Media";
 import ProductCard from "@/components/ProductCard";
 import Reveal from "@/components/Reveal";
-import { ConsultBand, FromPrice, NewArrivals, OfferBand } from "@/components/SiteBands";
+import { ConsultBand, FromPrice, KurtiShowcase, NewArrivals, OfferBand } from "@/components/SiteBands";
 import SplitText from "@/components/SplitText";
 import TrustStrip from "@/components/TrustStrip";
 import { images } from "@/lib/images";
@@ -130,6 +130,9 @@ export default function HomePage() {
           </ul>
         </div>
       </section>
+
+      {/* Kurtis: newest pieces, then by style and occasion */}
+      <KurtiShowcase />
 
       {/* Help choosing */}
       <ConsultBand />

@@ -3,14 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "./Icon";
 
-// Body measurements in inches. These are standard Indian kurti sizes: check them against your own measurements before launch.
+// Body measurements in inches. The bust numbers are the size numbers you gave (XS 32 … XXL 42); waist, hip and shoulder are standard figures to check against your own before launch.
 const ROWS: { size: string; bust: number; waist: number; hip: number; shoulder: number }[] = [
-  { size: "S", bust: 36, waist: 30, hip: 38, shoulder: 14 },
-  { size: "M", bust: 38, waist: 32, hip: 40, shoulder: 14.5 },
-  { size: "L", bust: 40, waist: 34, hip: 42, shoulder: 15 },
-  { size: "XL", bust: 42, waist: 36, hip: 44, shoulder: 15.5 },
-  { size: "XXL", bust: 44, waist: 38, hip: 46, shoulder: 16 },
-  { size: "XXXL", bust: 46, waist: 40, hip: 48, shoulder: 16.5 },
+  { size: "XS", bust: 32, waist: 26, hip: 34, shoulder: 13.5 },
+  { size: "S", bust: 34, waist: 28, hip: 36, shoulder: 14.0 },
+  { size: "M", bust: 36, waist: 30, hip: 38, shoulder: 14.5 },
+  { size: "L", bust: 38, waist: 32, hip: 40, shoulder: 15.0 },
+  { size: "XL", bust: 40, waist: 34, hip: 42, shoulder: 15.5 },
+  { size: "XXL", bust: 42, waist: 36, hip: 44, shoulder: 16.0 },
+  { size: "XXXL", bust: 44, waist: 38, hip: 46, shoulder: 16.5 },
 ];
 
 

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useCatalog } from "@/lib/catalog";
+import { FABRICS, LENGTHS, NECKS, SLEEVES, STYLES, WEAR, wearGroupsOf, type Opt } from "@/lib/kurti";
 import { occasions, weaveFilters, type CategorySlug, type Product } from "@/lib/products";
 import CollectionProductCard from "./CollectionProductCard";
 import { Icon } from "./Icon";
@@ -80,6 +81,23 @@ export default function CollectionGrid({ items: baseItems, category, showWeaves,
     });
     return [...seen.entries()].sort((a, b) => b[1].n - a[1].n || a[1].label.localeCompare(b[1].label));
   }, [items]);
+  const kp = category === "kurtis";
+  // Kurti filter options: only choices that at least one piece has, with how many.
+  const kOpts = useMemo(() => {
+    const build = (all: Opt[], get: (p: Product) => string[]) => {
+      const n = new Map<string, number>();
+      items.forEach((p) => new Set(get(p)).forEach((v) => v && n.set(v, (n.get(v) ?? 0) + 1)));
+      return all.filter((o) => n.has(o.slug)).map((o) => ({ ...o, n: n.get(o.slug) ?? 0 }));
+    };
+    return {
+      style: build(STYLES, (p) => [p.kurti?.style ?? ""]),
+      neck: build(NECKS, (p) => [p.kurti?.neck ?? ""]),
+      sleeve: build(SLEEVES, (p) => [p.kurti?.sleeve ?? ""]),
+      length: build(LENGTHS, (p) => [p.kurti?.length ?? ""]),
+      fabric: build(FABRICS, (p) => [p.kurti?.fabricGroup ?? ""]),
+      wear: build(WEAR, (p) => wearGroupsOf(p.kurti?.wear)),
+    };
+  }, [items]);
   const router = useRouter();
   const pathname = usePathname();
   const urlSp = useSearchParams();
@@ -114,6 +132,7 @@ export default function CollectionGrid({ items: baseItems, category, showWeaves,
   const weave = rawWeave === null ? defaultWeaves : rawWeave === "all" ? [] : list(rawWeave);
   const occasion = list(sp.get("occasion"));
   const colour = list(sp.get("colour"));
+  const ks = { style: list(sp.get("style")), neck: list(sp.get("neck")), sleeve: list(sp.get("sleeve")), length: list(sp.get("length")), fabric: list(sp.get("fabric")), wear: list(sp.get("wear")) };
   const min = sp.get("min") ?? "";
   const max = sp.get("max") ?? "";
   const stock = sp.get("stock") === "1";
@@ -126,7 +145,7 @@ export default function CollectionGrid({ items: baseItems, category, showWeaves,
     Object.entries(patch).forEach(([k, v]) => (v && !(k === "page" && v === "1") ? next.set(k, v) : next.delete(k)));
     write(next);
   };
-  const toggle = (key: "weave" | "occasion" | "colour", current: string[], value: string) => {
+  const toggle = (key: string, current: string[], value: string) => {
     const next = current.includes(value) ? current.filter((x) => x !== value) : [...current, value];
     go({ [key]: next.length ? next.join(",") : key === "weave" ? "all" : "" });
   };
@@ -140,6 +159,13 @@ export default function CollectionGrid({ items: baseItems, category, showWeaves,
         (!weave.length || (p.weave && weave.includes(p.weave))) &&
         (!occasion.length || occasion.some((o) => p.occasions.includes(o as never))) &&
         (!colour.length || colourNames(p).some((n) => colour.includes(colourKey(n)))) &&
+        (!kp ||
+          ((!ks.style.length || ks.style.includes(p.kurti?.style ?? "")) &&
+            (!ks.neck.length || ks.neck.includes(p.kurti?.neck ?? "")) &&
+            (!ks.sleeve.length || ks.sleeve.includes(p.kurti?.sleeve ?? "")) &&
+            (!ks.length.length || ks.length.includes(p.kurti?.length ?? "")) &&
+            (!ks.fabric.length || ks.fabric.includes(p.kurti?.fabricGroup ?? "")) &&
+            (!ks.wear.length || wearGroupsOf(p.kurti?.wear).some((g) => ks.wear.includes(g))))) &&
         (!stock || (colour.length ? pickColour(p, colour)?.inStock ?? p.inStock !== false : p.inStock !== false)) &&
         p.price >= lo &&
         p.price <= hi,
@@ -165,7 +191,7 @@ export default function CollectionGrid({ items: baseItems, category, showWeaves,
     else if (pageItems[pageItems.length - 1] !== "gap-l" && pageItems[pageItems.length - 1] !== "gap-r") pageItems.push(i < page ? "gap-l" : "gap-r");
   }
 
-  const active = (showWeaves ? weave.length : 0) + occasion.length + colour.length + (min || max ? 1 : 0) + (stock ? 1 : 0);
+  const active = (showWeaves ? weave.length : 0) + (kp && kOpts.wear.length ? 0 : occasion.length) + (kp ? Object.values(ks).reduce((a, v) => a + v.length, 0) : 0) + colour.length + (min || max ? 1 : 0) + (stock ? 1 : 0);
 
   // drawer: lock page scroll + Escape to close
   useEffect(() => {
@@ -237,7 +263,13 @@ export default function CollectionGrid({ items: baseItems, category, showWeaves,
       </div>
       <div className="cp-sep" />
       {showWeaves && group("weave", "Weave", weaveFilters.map((w) => check(w.label, weave.includes(w.slug), () => toggle("weave", weave, w.slug))))}
-      {group("occasion", "Occasion", occasions.map((o) => check(o.label, occasion.includes(o.slug), () => toggle("occasion", occasion, o.slug))))}
+      {kp && (["wear", "style", "neck", "sleeve", "length", "fabric"] as const).map((k) => {
+        const opts = kOpts[k];
+        if (!opts.length) return null;
+        const title = { wear: "Occasion", style: "Style", neck: "Neck", sleeve: "Sleeve", length: "Length", fabric: "Fabric" }[k];
+        return <div key={k}>{group(k, title, opts.map((o) => check(`${o.label} (${o.n})`, ks[k].includes(o.slug), () => toggle(k, ks[k], o.slug))))}</div>;
+      })}
+      {(!kp || kOpts.wear.length === 0) && group("occasion", "Occasion", occasions.map((o) => check(o.label, occasion.includes(o.slug), () => toggle("occasion", occasion, o.slug))))}
       {colourOptions.length > 0 && group("colour", "Colour", colourOptions.map(([k, o]) => {
         const dot = dotFor(k);
         return (

@@ -3,6 +3,7 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { catalogueHook, products, SAMPLE_IDS, setCatalogue, type Product, type ProductColour } from "./products";
 import type { AdminProduct, StockRow } from "./admin/types";
+import { fabricGroupLabel, fabricTypeLabel } from "./kurti";
 
 const KEY = "rupaari.admin.";
 const EVENT = "rupaari:admin";
@@ -45,7 +46,8 @@ const toProduct = (a: AdminProduct, base: Product | undefined, stock: StockRow |
     soldOutSizes: a.soldOutSizes,
     tone: a.tone,
     blurb: a.shortLine || a.description || base?.blurb || "",
-    fabric: base?.fabric ?? (a.category === "gift-craft" ? "Paper and ribbon" : "Silk"),
+    fabric: (a.category === "kurtis" && (fabricTypeLabel(a.fabricGroup, a.fabricType) ?? fabricGroupLabel(a.fabricGroup))) || base?.fabric || (a.category === "gift-craft" ? "Paper and ribbon" : "Silk"),
+    kurti: a.category === "kurtis" ? { style: a.style || undefined, neck: a.neck || undefined, sleeve: a.sleeve || undefined, length: a.length || undefined, fabricGroup: a.fabricGroup || undefined, fabricType: a.fabricType || undefined, wear: a.wearTags ?? [] } : undefined,
     image,
     gallery: gal(a.images),
     colours: colours.length ? colours : undefined,

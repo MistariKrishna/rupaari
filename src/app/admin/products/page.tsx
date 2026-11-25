@@ -54,15 +54,12 @@ export default function Products() {
   const hasDemo = d.products.some((p) => isDemo(p.id));
   const loadDemo = () => {
     const { products: dp, stock: ds } = demoCatalogue();
-    const have = new Set(d.products.map((p) => p.id));
-    const add = dp.filter((p) => !have.has(p.id));
-    const addStock = ds.filter((r) => add.some((p) => p.id === r.id));
-    if (!add.length) return toast("The demo products are already loaded");
-    if (!set("products", (prev) => [...add, ...prev])) return toast("Not enough browser storage for the demo products. Delete some large images and try again.", "err");
-    set("stock", (prev) => [...prev, ...addStock]);
-    set("collections", (prev) => prev.map((c) => ({ ...c, products: [...c.products, ...add.filter((p) => p.collection === c.id).map((p) => p.id)] })));
-    log("Product", `${add.length} demo products`, "Loaded demo catalogue");
-    toast(`${add.length} demo products added and live on the store`);
+    // loading again replaces the old demo products with the latest version; your own products are untouched
+    if (!set("products", (prev) => [...dp, ...prev.filter((p) => !isDemo(p.id))])) return toast("Not enough browser storage for the demo products. Delete some large images and try again.", "err");
+    set("stock", (prev) => [...prev.filter((r) => !isDemo(r.id)), ...ds]);
+    set("collections", (prev) => prev.map((c) => ({ ...c, products: [...c.products.filter((id) => !isDemo(id)), ...dp.filter((p) => p.collection === c.id).map((p) => p.id)] })));
+    log("Product", `${dp.length} demo products`, "Loaded demo catalogue");
+    toast(`${dp.length} demo products loaded and live on the store`);
   };
   const removeDemo = async () => {
     if (!(await confirm({ title: "Remove the demo products?", body: "Only the demo products are removed. Your own products stay as they are.", label: "Remove", danger: true }))) return;
@@ -124,7 +121,7 @@ export default function Products() {
 
   return (
     <>
-      <PageHeader title="Products" sub="Everything you sell. Drafts stay off the store until published." actions={<>{hasDemo ? <Btn variant="ghost" icon="trash" onClick={removeDemo}>Remove demo products</Btn> : <Btn variant="ghost" icon="plus" onClick={loadDemo}>Load demo catalogue</Btn>}<Btn variant="ghost" icon="upload" onClick={() => setImp(true)}>Import CSV</Btn><Btn href="/admin/products/new" icon="plus">New product</Btn></>} />
+      <PageHeader title="Products" sub="Everything you sell. Drafts stay off the store until published." actions={<>{hasDemo && <Btn variant="ghost" icon="trash" onClick={removeDemo}>Remove demo products</Btn>}<Btn variant="ghost" icon="plus" onClick={loadDemo}>{hasDemo ? "Refresh demo catalogue" : "Load demo catalogue"}</Btn><Btn variant="ghost" icon="upload" onClick={() => setImp(true)}>Import CSV</Btn><Btn href="/admin/products/new" icon="plus">New product</Btn></>} />
       <Toolbar placeholder="Search title or SKU">
         <FilterSelect param="status" label="All statuses" options={[{ value: "live", label: "Live" }, { value: "draft", label: "Draft" }, { value: "archived", label: "Archived" }]} />
         <FilterSelect param="category" label="All categories" options={categories.map((c) => ({ value: c.slug, label: c.label }))} />

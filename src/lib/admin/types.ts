@@ -57,6 +57,15 @@ export interface AdminProduct {
   colourSoldOut?: boolean;
   /** more colours of the same piece */
   variants?: ProductVariant[];
+  /** kurtis only */
+  style?: string;
+  neck?: string;
+  sleeve?: string;
+  length?: string;
+  fabricGroup?: string;
+  fabricType?: string;
+  /** detailed wear / occasion tags, for example "diwali" or "office-wear" */
+  wearTags?: string[];
   /** whole product marked out of stock, whatever the inventory says */
   soldOut?: boolean;
   mrp: number | "";
