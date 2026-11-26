@@ -4,9 +4,9 @@ import Reveal from "./Reveal";
 import SocialLinks from "./SocialLinks";
 
 const cols = [
-  { title: "Shop", links: [["All Sarees", "/collections/sarees"], ["New Arrivals", "/collections/sarees?sort=new"], ["Bridal Edit", "/collections/sarees?occasion=wedding"], ["Shop by Weave", "/collections"]] },
+  { title: "Shop", links: [["All Sarees", "/collections/sarees"], ["All Kurtis", "/collections/kurtis"], ["New Arrivals", "/collections/sarees?sort=new"], ["Bridal Edit", "/collections/sarees?occasion=wedding"], ["Gifting", "/collections/gift-craft"], ["Shop by Weave", "/collections"]] },
   { title: "RUPAARI", links: [["Our Story", "/about"], ["Our Craft", "/craft"], ["Journal", "/about"]] },
-  { title: "Help", links: [["Contact Us", "/contact"], ["Shipping & Returns", "/contact"], ["Saree Care", "/contact"], ["FAQs", "/contact"]] },
+  { title: "Help", links: [["Contact Us", "/contact"], ["Book a Consultation", "/contact"], ["Track Order", "/account/track"], ["Returns & Refunds", "/account/returns"], ["My Account", "/account"], ["Saree & Kurti Care", "/contact"], ["FAQs", "/contact"]] },
 ];
 
 /** Footer used on the collection pages, per the approved design. */

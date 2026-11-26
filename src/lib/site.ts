@@ -12,7 +12,7 @@ export const site = {
   social: [
     // Paste each page's link between the quotes (WhatsApp: https://wa.me/91XXXXXXXXXX). Icons always show; a link is added once filled.
     { name: "Instagram", icon: "instagram", href: "https://www.instagram.com/therupaari/" },
-    { name: "WhatsApp", icon: "whatsapp", href: "https://wa.me/91XXXXXXXXXX" },
+    { name: "WhatsApp", icon: "whatsapp", href: "https://wa.me/919427162414" },
     { name: "YouTube", icon: "youtube", href: "https://www.youtube.com/channel/UCXKVU9M_hm-h2LotYNQXnOQ" },
     { name: "Facebook", icon: "facebook", href: "https://www.facebook.com/therupaari/" },
     { name: "Pinterest", icon: "pinterest", href: "" },
