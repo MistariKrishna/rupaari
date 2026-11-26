@@ -133,6 +133,7 @@ export const nav = {
       { label: "Our Story", href: "/about" },
       { label: "Our Craft", href: "/craft" },
       { label: "Journal", href: "/journal" },
+      { label: "Authenticity Promise", href: "/authenticity" },
     ],
     action: [
       { label: "Book a Consultation", href: "/consultation" },

@@ -7,6 +7,7 @@ import { colourway, getGift, setGift } from "@/lib/orders";
 import { getProduct, money } from "@/lib/products";
 import Crumbs from "./Crumbs";
 import { Icon } from "./Icon";
+import BagPin from "./BagPin";
 import CouponBox from "./CouponBox";
 import { useCoupon } from "@/lib/coupons";
 import Media from "./Media";
@@ -95,9 +96,10 @@ export default function BagPage() {
                 <div><dt>Shipping</dt><dd>{freeShip ? "Free" : "At checkout"}</dd></div>
                 {discount > 0 && <div className="rp-bold"><dt>Estimated total</dt><dd>{money(subtotal - discount)}</dd></div>}
               </dl>
+              <BagPin freeShip={freeShip} />
               <CouponBox subtotal={subtotal} />
               <Link href="/checkout" className="btn w-full" aria-disabled={lines.length === 0}>Proceed to checkout</Link>
-              <Link href="/contact" className="rp-link bg-ship">Shipping &amp; returns</Link>
+              <Link href="/shipping-returns" className="rp-link bg-ship">Shipping &amp; returns</Link>
             </aside>
           </div>
         )}

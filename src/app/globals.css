@@ -3754,3 +3754,57 @@ button:focus-visible, [role="button"]:focus-visible, .btn:focus-visible, .icon-b
 .cs-done { max-width: 520px; padding: 32px; border: 1px solid #d3c7bc; background: #fbf7ef; }
 .cs-done h2 { margin: 12px 0 8px; font-family: var(--font-cormorant), "Cormorant Garamond", serif; font-size: 30px; font-weight: 500; text-transform: none; letter-spacing: 0; color: #680f1a; }
 .cs-tick { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 999px; background: #680f1a; color: #f7f1e7; }
+
+/* ---------- currency switch ---------- */
+.cur-sw select { appearance: none; padding: 4px 26px 4px 10px; border: 1px solid #bba99a; background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none' stroke='%23680f1a' stroke-width='1.5'%3E%3Cpath d='M1 1l4 4 4-4'/%3E%3C/svg%3E") no-repeat right 9px center; color: #680f1a; font: 500 13px/1.4 Montserrat, sans-serif; letter-spacing: 0.06em; cursor: pointer; }
+.cur-sw select:hover, .cur-sw select:focus-visible { border-color: #680f1a; }
+.cf-cur { display: flex; align-items: center; gap: 10px; }
+
+/* ---------- navbar currency ---------- */
+.hc-cur { position: relative; gap: 6px; cursor: pointer; }
+.hc-cur .icon { width: 12px !important; height: 12px !important; }
+.hc-cur-t { font-size: inherit; letter-spacing: inherit; text-transform: uppercase; }
+.hc-cur select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
+.hc-cur:focus-within { outline: 2px solid #c9a24d; outline-offset: 3px; }
+.hc-cur--sm { min-width: 44px; justify-content: center; }
+
+/* ---------- navbar: logo in the exact centre, equal gaps ---------- */
+@media (min-width: 1024px) {
+  .hd-grid { grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr) !important; }
+  /* both groups sit the same distance from the logo, and items inside them are spaced the same */
+  .hd-grid > .hd-left { justify-self: end !important; margin-right: clamp(2rem, 4.5vw, 4.5rem); }
+  .hd-grid > .hd-right { justify-self: start !important; margin-left: clamp(2rem, 4.5vw, 4.5rem); gap: clamp(1.5rem, 2.4vw, 2.25rem) !important; }
+  .hd-grid > .hd-left > ul { gap: clamp(1.5rem, 2.4vw, 2.25rem) !important; }
+}
+
+/* ---------- waitlist and gift cards ---------- */
+.wl-int { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; border: 0; }
+.wl-int .field-label { width: 100%; }
+.wl-chip { position: relative; display: inline-flex; align-items: center; padding: 10px 16px; border: 1px solid #bba99a; font-size: 14px; cursor: pointer; transition: background 0.3s, color 0.3s, border-color 0.3s; }
+.wl-chip input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+.wl-chip[data-on="true"] { background: #680f1a; border-color: #680f1a; color: #f7f1e7; }
+.wl-chip:focus-within { outline: 2px solid #c9a24d; outline-offset: 2px; }
+.wl-consent { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.5; }
+.wl-consent input { margin-top: 4px; accent-color: #680f1a; }
+
+/* ---------- address book ---------- */
+.ab-grid { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); margin: 24px 0; }
+@media (min-width: 720px) { .ab-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1000px) { .ab-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.ab-card { display: grid; gap: 12px; padding: 20px; align-content: start; }
+.ab-card header { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.ab-card address { font-style: normal; font-size: 15px; line-height: 1.6; }
+.ab-acts { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+.ab-form { max-width: 640px; margin-top: 24px; }
+.ck-saved { margin-bottom: 18px; }
+
+.bg-pin { margin: 4px 0 8px; }
+
+/* ---------- cookie banner ---------- */
+.ck-banner { position: fixed; z-index: 95; left: 16px; right: 16px; bottom: 16px; display: grid; gap: 14px; max-width: 760px; margin: 0 auto; padding: 18px 20px; background: #4a0b13; color: #f7f1e7; box-shadow: 0 16px 40px rgba(28, 26, 26, 0.3); }
+.ck-banner p { margin: 0; font-size: 14px; line-height: 1.55; }
+.ck-banner a { color: #e5c57a; text-decoration: underline; text-underline-offset: 3px; }
+.ck-banner > div { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
+.ck-banner .btn { min-height: 44px; }
+.ck-banner .btn-secondary { color: #f7f1e7; border-color: rgba(247, 241, 231, 0.6); }
+@media (min-width: 720px) { .ck-banner { grid-template-columns: 1fr auto; align-items: center; } }

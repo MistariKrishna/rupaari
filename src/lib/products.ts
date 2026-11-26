@@ -1,5 +1,6 @@
 import type { Tone } from "./content";
 import type { KurtiInfo } from "./kurti";
+import { fmtMoney } from "./currency";
 
 // SAMPLE CATALOGUE. Names, prices and MRPs below are placeholders taken from the
 // design reference. Replace with your real products (or load from your database)
@@ -148,7 +149,7 @@ export const products: Product[] = [];
 export const sampleProduct = (id: string) => sampleProducts.find((p) => p.id === id);
 export const SAMPLE_IDS = new Set(sampleProducts.map((p) => p.id));
 
-export const money = (n: number) => "₹" + Math.round(n).toLocaleString("en-IN");
+export const money = (n: number) => fmtMoney(n);
 export const discountPct = (p: Product) => (p.mrp && p.mrp > p.price ? Math.round((1 - p.price / p.mrp) * 100) : 0);
 /**
  * Products published in the admin (see lib/catalog.ts) are registered here in the browser:

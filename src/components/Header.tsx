@@ -10,6 +10,7 @@ import { nav, isAuthPath } from "@/lib/site";
 import { Icon } from "./Icon";
 import Media from "./Media";
 import Logo from "./Logo";
+import HeaderCurrency from "./HeaderCurrency";
 import MenuOverlay from "./MenuOverlay";
 import { useStore } from "./StoreProvider";
 
@@ -183,6 +184,7 @@ export default function Header() {
               </button>
               {logo}
               <div className="flex items-center gap-8 justify-self-end">
+                <HeaderCurrency />
                 <button ref={heroSearch} type="button" className="util" aria-expanded={search} aria-controls="site-search" onClick={toggleSearch}>
                   <Icon name="search" />
                   Search
@@ -197,8 +199,9 @@ export default function Header() {
           </div>
 
           <div className="bar" data-show={!heroMode && !mobile}>
-        <div className="grid h-[84px] grid-cols-[1fr_auto_1fr] items-center">
+        <div className="hd-grid grid h-[84px] grid-cols-[1fr_auto_1fr] items-center">
           <nav
+            className="hd-left"
             aria-label="Main"
             onClick={(e) => {
               // choosing a link inside a dropdown closes it, even though the pointer is still over it
@@ -315,7 +318,8 @@ export default function Header() {
 
           {logo}
 
-          <div className="flex items-center gap-7 justify-self-end">
+          <div className="hd-right flex items-center gap-7 justify-self-end">
+            <HeaderCurrency />
             <button ref={searchBtn} type="button" className="util" aria-expanded={search} aria-controls="site-search" onClick={toggleSearch}>
               <Icon name="search" />
               Search
@@ -341,6 +345,7 @@ export default function Header() {
           </button>
           {logo}
           <div className="flex items-center justify-end">
+            <HeaderCurrency compact />
             <button ref={mSearchBtn} type="button" className="flex h-11 w-11 items-center justify-center hc" aria-label="Search" aria-expanded={search} aria-controls="site-search" onClick={toggleSearch}>
               <Icon name="search" />
             </button>

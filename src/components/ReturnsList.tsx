@@ -9,6 +9,7 @@ import { Thumb } from "./OrderParts";
 import { useOrders } from "./useOrders";
 
 const LABEL: Record<ReturnStatus, string> = { requested: "Requested", approved: "Approved", "picked-up": "Picked up", received: "Received", refunded: "Refunded" };
+const XLABEL: Record<ReturnStatus, string> = { ...LABEL, refunded: "Exchange sent" };
 const NOTE: Record<ReturnStatus, string> = {
   requested: "Your request is awaiting review.",
   approved: "Pickup is scheduled. Keep the item packed with its tags.",
@@ -59,20 +60,20 @@ export default function ReturnsList() {
               return (
                 <article key={`${o.id}${itemKey(it)}`} className="rp-card ol-card">
                   <header className="ol-head">
-                    <div><h2 className="ol-id">Order #{o.id}</h2><p>Return requested {fmtDate(r.requestedAt)}</p></div>
-                    <span className="rp-badge rp-badge--dot"><i aria-hidden="true" />{LABEL[r.status]}</span>
+                    <div><h2 className="ol-id">Order #{o.id}</h2><p>{r.kind === "exchange" ? "Exchange" : "Return"} requested {fmtDate(r.requestedAt)}</p></div>
+                    <span className="rp-badge rp-badge--dot"><i aria-hidden="true" />{(r.kind === "exchange" ? XLABEL : LABEL)[r.status]}</span>
                   </header>
                   <div className="ol-body">
                     <ul className="ol-items"><li><Thumb it={it} size={96} /><div><h3>{it.name}</h3><p>{itemMeta(it)}</p><p>Reason: {r.reason}</p></div></li></ul>
                     <div className="ol-side">
-                      <p className="ol-due">{r.status === "refunded" ? "Refunded" : "Refund due"}</p>
+                      <p className="ol-due">{r.kind === "exchange" ? (r.status === "refunded" ? "Exchanged" : "Exchange value") : r.status === "refunded" ? "Refunded" : "Refund due"}</p>
                       <p className="ol-amt">{money(it.price * it.qty)}</p>
                       <Link href={`/account/orders/${o.id}`} className="btn">View order <Icon name="arrow-right" /></Link>
                     </div>
                   </div>
                   <ol className="rt-steps">
                     {RETURN_STEPS.map((s, i) => (
-                      <li key={s} data-done={i <= at} data-current={i === at}><span className="rt-dot" />{LABEL[s]}</li>
+                      <li key={s} data-done={i <= at} data-current={i === at}><span className="rt-dot" />{(r.kind === "exchange" ? XLABEL : LABEL)[s]}</li>
                     ))}
                   </ol>
                   <p className="rt-note">{NOTE[r.status]} <small><When it={it} /></small></p>

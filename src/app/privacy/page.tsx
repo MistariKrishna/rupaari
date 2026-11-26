@@ -18,6 +18,7 @@ export default function Page() {
         <li>To answer your questions and bookings.</li>
         <li>To send our newsletter, only if you subscribe. You can unsubscribe at any time.</li>
       </ul></section>
+      <section className="info-sec"><h2>Cookies and analytics</h2><p>The site works with only the cookies it needs. If you choose Accept all, we also use analytics tools (Google Analytics, Meta Pixel and Microsoft Clarity) to see which pages are used and how people shop, so we can improve the site. You can choose Only necessary, and your choice is remembered on this device.</p></section>
       <section className="info-sec"><h2>Sharing</h2><p>We share details only with the partners needed to serve you, such as couriers and payment providers. We do not sell your personal information.</p></section>
       <section className="info-sec"><h2>Your choices</h2><p>You can view and update your details in <Link href="/account/profile">My profile</Link>. To have your data corrected or deleted, write to us.</p></section>
       <section className="info-sec"><h2>Contact</h2><p>{site.contact.email ? <>Write to {site.contact.email}.</> : <>Use our <Link href="/contact">contact page</Link>.</>}</p></section>

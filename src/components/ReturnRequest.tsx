@@ -22,6 +22,7 @@ export default function ReturnRequest({ id }: { id: string }) {
   const o = orders.find((x) => x.id === id);
   const it = o?.items.find((i) => sameItem(i, { id: itemId ?? "", size: sizeParam })) ?? (o?.items.length === 1 ? o.items[0] : undefined);
 
+  const [kind, setKind] = useState<"return" | "exchange">("return");
   const [reason, setReason] = useState(RETURN_REASONS[0]);
   const [details, setDetails] = useState("");
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -29,6 +30,7 @@ export default function ReturnRequest({ id }: { id: string }) {
   const file = useRef<HTMLInputElement>(null);
   useEffect(() => () => photos.forEach((p) => URL.revokeObjectURL(p.url)), []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const exchangeUsed = Boolean(o?.items.some((x) => x.return?.kind === "exchange"));
   const crumbs = [{ label: "Home", href: "/" }, { label: "Account", href: "/account" }, { label: "My orders", href: "/account/orders" }, { label: `#${id}`, href: `/account/orders/${id}` }, { label: "Request a return" }];
   if (!ready) return <div className="rp-page" />;
   if (!o || !it || returnState(o, it) !== "eligible") {
@@ -62,7 +64,7 @@ export default function ReturnRequest({ id }: { id: string }) {
     e.preventDefault();
     update(o.id, (x) => ({
       ...x,
-      items: x.items.map((y) => (sameItem(y, it) ? { ...y, return: { status: "requested", reason, details: details.trim(), photos: photos.map((p) => p.name), requestedAt: new Date().toISOString() } } : y)),
+      items: x.items.map((y) => (sameItem(y, it) ? { ...y, return: { kind, status: "requested", reason, details: details.trim(), photos: photos.map((p) => p.name), requestedAt: new Date().toISOString() } } : y)),
     }));
     router.push(`/account/orders/${o.id}`);
   };
@@ -72,13 +74,18 @@ export default function ReturnRequest({ id }: { id: string }) {
       <div className="rp-wrap">
         <Crumbs items={crumbs} />
         <header className="od-top">
-          <h1 className="rp-title">Request a Return</h1>
+          <h1 className="rp-title">{kind === "exchange" ? "Request an Exchange" : "Request a Return"}</h1>
           <p className="od-lead">Order #{o.id} · Delivered</p>
         </header>
         <div className="od-grid rt-grid">
           <form onSubmit={submit} className="rt-form">
+            <fieldset className="wl-int" aria-label="What would you like?">
+              <label className="wl-chip" data-on={kind === "return"}><input type="radio" name="rt-kind" checked={kind === "return"} onChange={() => setKind("return")} />Return for a refund</label>
+              <label className="wl-chip" data-on={kind === "exchange"} aria-disabled={exchangeUsed}><input type="radio" name="rt-kind" checked={kind === "exchange"} disabled={exchangeUsed} onChange={() => setKind("exchange")} />Exchange for another piece</label>
+            </fieldset>
+            <p className="rt-note">{exchangeUsed ? "The free one-time exchange on this order has already been used." : kind === "exchange" ? "One free exchange per order, for a piece of equal or higher value. If it costs more, you pay the difference." : "Refunds go to your original payment method after we receive and check the item."}</p>
             <div className="rp-field">
-              <label htmlFor="rt-reason">Reason for return</label>
+              <label htmlFor="rt-reason">{kind === "exchange" ? "Reason for exchange" : "Reason for return"}</label>
               <div className="rp-select">
                 <select id="rt-reason" value={reason} onChange={(e) => setReason(e.target.value)}>{RETURN_REASONS.map((r) => <option key={r}>{r}</option>)}</select>
                 <Icon name="chevron-down" />
@@ -102,7 +109,7 @@ export default function ReturnRequest({ id }: { id: string }) {
               {err && <p className="rp-err" role="alert"><Icon name="warning" />{err}</p>}
             </div>
             <p className="rt-note">We’ll review your request before arranging a pickup.</p>
-            <button type="submit" className="btn w-full">Submit return request</button>
+            <button type="submit" className="btn w-full">{kind === "exchange" ? "Submit exchange request" : "Submit return request"}</button>
           </form>
 
           <aside className="rp-card rt-side" aria-label="Return summary">
@@ -119,7 +126,7 @@ export default function ReturnRequest({ id }: { id: string }) {
               <div className="rt-addr-h"><h2 className="rp-h2">Pickup address</h2><Link href="/contact" className="rp-link">Change</Link></div>
               <AddressBlock o={o} />
             </div>
-            <Link href="/contact" className="rp-link rt-pol">Return policy</Link>
+            <Link href="/shipping-returns" className="rp-link rt-pol">Return policy</Link>
           </aside>
         </div>
       </div>

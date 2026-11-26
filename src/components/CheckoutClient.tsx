@@ -9,6 +9,7 @@ import { DEMO, checkPin, indiaOnly, sendCode, shippingFor, startPayment, verifyC
 import { COUNTRIES, guessCountry } from "@/lib/countries";
 import { emptyIdent, identValue, idNoun, maskId, type Ident } from "@/lib/identity";
 import { productSlot } from "@/lib/images";
+import { loadAddresses, upsertAddress, type SavedAddress } from "@/lib/addresses";
 import { colourway, getGift, getSavedAddress, loadOrders, nextOrderId, saveAddress, type Address, type Order, type PayMethod } from "@/lib/orders";
 import { getProduct, money } from "@/lib/products";
 import { IdentField } from "./AuthFields";
@@ -17,6 +18,8 @@ import { Icon } from "./Icon";
 import Media from "./Media";
 import OtpBoxes from "./OtpBoxes";
 import { lineKey, useStore } from "./StoreProvider";
+import { track } from "@/lib/analytics";
+import { currencyCode, fmtInr } from "@/lib/currency";
 import { useOrders } from "./useOrders";
 import { useSession } from "./useSession";
 
@@ -42,6 +45,7 @@ export default function CheckoutClient() {
   // 2 address
   const [addr, setAddr] = useState<Address>(blank);
   const [addrDone, setAddrDone] = useState(false);
+  const [book, setBook] = useState<SavedAddress[]>([]);
   const [saveAddr, setSaveAddr] = useState(false);
 
   // 3 payment
@@ -55,6 +59,14 @@ export default function CheckoutClient() {
     const saved = getSavedAddress();
     setAddr(saved ?? { ...blank, country: g.name });
   }, []);
+  // Saved addresses of the signed-in customer; the default is filled in.
+  useEffect(() => {
+    if (!user) return;
+    const list = loadAddresses(user.id);
+    setBook(list);
+    const def = list.find((a) => a.isDefault) ?? list[0];
+    if (def) setAddr(def);
+  }, [user]);
 
   // A signed-in customer skips verification.
   useEffect(() => {
@@ -134,8 +146,12 @@ export default function CheckoutClient() {
       ...(discount > 0 ? { discount, coupon: couponCode } : {}),
       gift: gift.on ? gift.message || "Gift wrap requested" : undefined,
     };
-    if (saveAddr) saveAddress(addr);
+    if (saveAddr) {
+      saveAddress(addr);
+      if (user) upsertAddress(user.id, { ...addr, makeDefault: book.length === 0 });
+    }
     add(order);
+    track("purchase", { transaction_id: order.id, currency: "INR", value: order.total, items: order.items.map((i) => ({ item_id: i.id, item_name: i.name, price: i.price, quantity: i.qty })) });
     if (couponCode && (discount > 0 || freeShip)) consumeCoupon(couponCode);
     clear();
     router.push(`/order-confirmation?order=${order.id}`);
@@ -257,6 +273,18 @@ export default function CheckoutClient() {
                     setStep(3);
                   }}
                 >
+                  {book.length > 0 && (
+                    <div className="rp-field ck-saved">
+                      <label htmlFor="a-saved">Deliver to a saved address</label>
+                      <div className="rp-select">
+                        <select id="a-saved" value={book.find((b) => b.line1 === addr.line1 && b.pin === addr.pin)?.id ?? ""} onChange={(e) => { const b = book.find((x) => x.id === e.target.value); if (b) setAddr(b); }}>
+                          <option value="">Enter a new address</option>
+                          {book.map((b) => <option key={b.id} value={b.id}>{b.label}: {b.name}, {b.line1}, {b.city}</option>)}
+                        </select>
+                        <Icon name="chevron-down" />
+                      </div>
+                    </div>
+                  )}
                   <div className="rp-field">
                     <label htmlFor="a-country">Country / Region</label>
                     <div className="rp-select">
@@ -366,6 +394,7 @@ export default function CheckoutClient() {
                 <dd>{shipping === 0 ? "Free" : shipping !== null ? money(shipping) : pin === "unavailable" ? "Unavailable for this address" : "After address entry"}</dd>
               </div>
               {shipping !== null && <div className="rp-bold rp-total"><dt>{payLabel}</dt><dd>{money(total)}</dd></div>}
+              {shipping !== null && currencyCode() !== "INR" && <div><dt>Charged in INR</dt><dd>{fmtInr(total)}</dd></div>}
             </dl>
           </aside>
         </div>

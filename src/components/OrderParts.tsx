@@ -4,6 +4,7 @@ import Link from "next/link";
 import { productSlot } from "@/lib/images";
 import { maskId } from "@/lib/identity";
 import { PAY_LABEL, fmtDate, type Order, type OrderItem } from "@/lib/orders";
+import { currencyCode, fmtInr } from "@/lib/currency";
 import { money } from "@/lib/products";
 import { Icon } from "./Icon";
 import Media from "./Media";
@@ -49,6 +50,7 @@ export function PaymentSummary({ o, refunded = false, children, confirm = false 
         <div><dt>Shipping</dt><dd>{o.shipping ? money(o.shipping) : "Free"}</dd></div>
         <div className="rp-bold rp-total"><dt>{confirm && o.payment === "cod" ? "Due on delivery" : totalLabel(o, refunded)}</dt><dd>{money(o.total)}</dd></div>
       </dl>
+      {currencyCode() !== "INR" && <p className="rp-hint">Prices are shown in {currencyCode()} for reference. Your order is charged in INR: {fmtInr(o.total)}.</p>}
       {children}
     </aside>
   );

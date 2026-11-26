@@ -8,7 +8,7 @@ import { ConsultBand, FromPrice, KurtiShowcase, NewArrivals, OfferBand } from "@
 import SplitText from "@/components/SplitText";
 import TrustStrip from "@/components/TrustStrip";
 import { images } from "@/lib/images";
-import { categories, discountPct, money, picks, products, weaves } from "@/lib/products";
+import { categories, discountPct, picks, products, weaves } from "@/lib/products";
 
 const priceBands = [
   { label: "Under", big: "₹10,000", href: "/collections/sarees?max=10000" },

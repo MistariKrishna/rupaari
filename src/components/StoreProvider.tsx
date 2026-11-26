@@ -2,6 +2,7 @@
 
 import "@/lib/catalog";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { track } from "@/lib/analytics";
 import { getProduct, hasSizes } from "@/lib/products";
 
 interface Line {
@@ -77,6 +78,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (!p) return;
     if (hasSizes(p) && !size) return; // a kurti needs a size
     const key = lineKey({ id, size, colour });
+    track("add_to_cart", { currency: "INR", value: p.price * qty, items: [{ item_id: id, item_name: p.name, price: p.price, quantity: qty }] });
     setLines((cur) => {
       if (cur.some((l) => lineKey(l) === key)) return cur.map((l) => (lineKey(l) === key ? { ...l, qty: Math.min(10, l.qty + qty) } : l));
       return [...cur, { id, qty, ...(size ? { size } : {}), ...(colour ? { colour } : {}) }];

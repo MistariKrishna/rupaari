@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { loadAddresses, upsertAddress } from "@/lib/addresses";
 import { changePassword, getProfile, hasPassword, updateProfile } from "@/lib/auth";
 import { checkPin } from "@/lib/checkout";
 import { COUNTRIES } from "@/lib/countries";
@@ -45,7 +46,8 @@ export default function ProfileForm() {
     setAlt(p.altContact ?? "");
     setDob(p.dob ?? "");
     setGender(p.gender ?? "");
-    setAddr(getSavedAddress() ?? { ...blank, name: user.name });
+    const book = loadAddresses(user.id);
+    setAddr(book.find((a) => a.isDefault) ?? getSavedAddress() ?? { ...blank, name: user.name });
   }, [user]);
 
   if (!user) return <div className="rp-page" />;
@@ -64,7 +66,8 @@ export default function ProfileForm() {
     if (!addr.name.trim() || !addr.line1.trim() || !addr.city.trim() || !addr.state.trim()) return setM2({ ok: false, text: "Fill in name, address, city and state." });
     if (checkPin(addr.country, addr.pin) !== "ok") return setM2({ ok: false, text: "Check the PIN or postal code." });
     saveAddress(addr);
-    setM2({ ok: true, text: "Your delivery address is saved. It will be filled in at checkout." });
+    upsertAddress(user.id, { ...addr, makeDefault: true });
+    setM2({ ok: true, text: "Your default delivery address is saved. It will be filled in at checkout." });
   };
   const savePass = async (e: React.FormEvent) => {
     e.preventDefault();

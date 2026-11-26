@@ -8,7 +8,7 @@ import { FABRICS, LENGTHS, NECKS, SLEEVES, STYLES, WEAR } from "@/lib/kurti";
 import { KURTI_SIZES, categories, occasions, weaveFilters, type OccasionSlug, type WeaveSlug } from "@/lib/products";
 import { useAdmin } from "./AdminShell";
 import ImageUploader from "./ImageUploader";
-import { Btn, Card, Check, Field, PageHeader, StatusBadge, Tabs, Toggle, money, slugify, toNum, uid } from "./ui";
+import { Btn, Card, Check, Field, PageHeader, StatusBadge, Tabs, money, slugify, toNum, uid } from "./ui";
 
 type Tab = "basics" | "details" | "sizes" | "pricing" | "colours" | "media" | "seo";
 

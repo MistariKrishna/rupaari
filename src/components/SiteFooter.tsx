@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { isAuthPath } from "@/lib/site";
 import CollectionsFooter from "./CollectionsFooter";
+import CurrencySwitch from "./CurrencySwitch";
 
 /** Full footer everywhere; a slim one on bag-to-order pages (checkout, orders, returns), as designed. */
 export default function SiteFooter() {
@@ -20,7 +21,7 @@ export default function SiteFooter() {
           <Link href="/privacy">Privacy Policy</Link>
           <Link href="/terms">Terms &amp; Conditions</Link>
         </nav>
-        <p>India · INR ₹</p>
+        <p className="cf-cur">India · <CurrencySwitch /></p>
       </div>
     </footer>
   );

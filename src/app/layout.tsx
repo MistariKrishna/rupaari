@@ -4,6 +4,8 @@ import "./globals.css";
 import { StoreProvider } from "@/components/StoreProvider";
 import FaviconSync from "@/components/FaviconSync";
 import StoreChrome from "@/components/StoreChrome";
+import JsonLd from "@/components/JsonLd";
+import { SITE_URL } from "@/lib/seo";
 
 // Cinzel is the design system's designated fallback for Trajan Pro (licensed).
 const cinzel = Cinzel({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-cinzel", display: "swap" });
@@ -16,8 +18,12 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: { default: "RUPAARI | Pure silk. Honest zari.", template: "%s | RUPAARI" },
   description: "RUPAARI: heirloom spirit, contemporary ease. South Indian silk sarees. Rediscover Yourself.",
+  alternates: { canonical: "./" },
+  openGraph: { type: "website", siteName: "RUPAARI", locale: "en_IN", title: "RUPAARI | Rediscover Yourself", description: "South Indian silk sarees and kurtis, with honest labels and real stories." },
+  twitter: { card: "summary_large_image", title: "RUPAARI | Rediscover Yourself", description: "South Indian silk sarees and kurtis, with honest labels and real stories." },
 };
 
 export const viewport: Viewport = {
@@ -46,6 +52,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="#main" className="absolute left-[-999px] top-0 z-[100] bg-burgundy px-4 py-3 text-ivory focus:left-0">
           Skip to content
         </a>
+        <JsonLd data={{ "@context": "https://schema.org", "@type": "Organization", name: "RUPAARI", url: SITE_URL, slogan: "Rediscover Yourself" }} />
+        <JsonLd data={{ "@context": "https://schema.org", "@type": "WebSite", name: "RUPAARI", url: SITE_URL, potentialAction: { "@type": "SearchAction", target: `${SITE_URL}/collections/sarees?q={search_term_string}`, "query-input": "required name=search_term_string" } }} />
         <FaviconSync />
         <StoreProvider>
           <StoreChrome>{children}</StoreChrome>

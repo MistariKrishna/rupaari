@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Icon } from "@/components/Icon";
 import InfoPage from "@/components/InfoPage";
 import Media from "@/components/Media";
-import { articles, niceDate } from "@/lib/journal";
+import { articles } from "@/lib/journal";
 
 export const metadata: Metadata = { title: "Journal", description: "Guides, style notes and stories from RUPAARI." };
 

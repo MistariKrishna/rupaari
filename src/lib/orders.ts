@@ -6,6 +6,8 @@ export type ReturnStatus = "requested" | "approved" | "picked-up" | "received" |
 export const RETURN_STEPS: ReturnStatus[] = ["requested", "approved", "picked-up", "received", "refunded"];
 
 export interface ReturnInfo {
+  /** "exchange" = a free one-time swap for another piece of equal or higher value */
+  kind?: "return" | "exchange";
   status: ReturnStatus;
   reason: string;
   details: string;

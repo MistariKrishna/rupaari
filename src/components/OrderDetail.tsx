@@ -116,10 +116,10 @@ export default function OrderDetail({ id }: { id: string }) {
                         <h3><Link href={`/product/${it.id}`}>{it.name}</Link></h3>
                         {it.return && <ReturnBlock it={it} />}
                         {st === "non-returnable" && (
-                          <div className="od-ret"><span className="rp-badge rp-badge--muted">Return unavailable</span><p>This item is marked as non-returnable.</p><Link href="/contact" className="rp-link od-small">View return policy <Icon name="arrow-right" /></Link></div>
+                          <div className="od-ret"><span className="rp-badge rp-badge--muted">Return unavailable</span><p>This item is marked as non-returnable.</p><Link href="/shipping-returns" className="rp-link od-small">View return policy <Icon name="arrow-right" /></Link></div>
                         )}
                         {st === "closed" && (
-                          <div className="od-ret"><span className="rp-badge rp-badge--muted">Return unavailable</span><p>The return window for this item has closed.</p><Link href="/contact" className="rp-link od-small">View return policy <Icon name="arrow-right" /></Link></div>
+                          <div className="od-ret"><span className="rp-badge rp-badge--muted">Return unavailable</span><p>The return window for this item has closed.</p><Link href="/shipping-returns" className="rp-link od-small">View return policy <Icon name="arrow-right" /></Link></div>
                         )}
                         <p className="rp-colour">{it.colour}</p>
                         {it.size && <p>Size {it.size}</p>}

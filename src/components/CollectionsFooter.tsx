@@ -1,12 +1,13 @@
 import Link from "next/link";
 import NewsletterForm from "./NewsletterForm";
+import CurrencySwitch from "./CurrencySwitch";
 import Reveal from "./Reveal";
 import SocialLinks from "./SocialLinks";
 
 const cols = [
-  { title: "Shop", links: [["All Sarees", "/collections/sarees"], ["All Kurtis", "/collections/kurtis"], ["New Arrivals", "/collections/sarees?sort=new"], ["Bridal Edit", "/collections/sarees?occasion=wedding"], ["Gifting", "/collections/gift-craft"], ["Shop by Weave", "/collections"]] },
-  { title: "RUPAARI", links: [["Our Story", "/about"], ["Our Craft", "/craft"], ["Journal", "/journal"]] },
-  { title: "Help", links: [["Contact Us", "/contact"], ["Book a Consultation", "/consultation"], ["Track Order", "/account/track"], ["Returns & Refunds", "/account/returns"], ["My Account", "/account"], ["Saree & Kurti Care", "/care"], ["FAQs", "/faq"]] },
+  { title: "Shop", links: [["All Sarees", "/collections/sarees"], ["All Kurtis", "/collections/kurtis"], ["New Arrivals", "/collections/sarees?sort=new"], ["Bridal Edit", "/collections/sarees?occasion=wedding"], ["Gifting", "/collections/gift-craft"], ["Gift Cards", "/gift-cards"], ["Shop by Weave", "/collections"]] },
+  { title: "RUPAARI", links: [["Our Story", "/about"], ["Our Craft", "/craft"], ["Journal", "/journal"], ["Authenticity Promise", "/authenticity"], ["Visit Us", "/stores"]] },
+  { title: "Help", links: [["Contact Us", "/contact"], ["Book a Consultation", "/consultation"], ["Track Order", "/account/track"], ["Returns & Refunds", "/account/returns"], ["Size & Drape Guide", "/size-drape-guide"], ["Saree & Kurti Care", "/care"], ["FAQs", "/faq"]] },
 ];
 
 /** Footer used on the collection pages, per the approved design. */
@@ -42,7 +43,7 @@ export default function CollectionsFooter() {
           <Link href="/privacy">Privacy Policy</Link>
           <Link href="/terms">Terms &amp; Conditions</Link>
         </p>
-        <p>India · INR ₹</p>
+        <p className="cf-cur">India · <CurrencySwitch /></p>
       </Reveal>
     </footer>
   );

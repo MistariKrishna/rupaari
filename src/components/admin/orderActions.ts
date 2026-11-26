@@ -1,5 +1,3 @@
-"use client";
-
 import { useAdmin } from "./AdminShell";
 import { emptyMeta, entry } from "@/lib/admin/orders";
 import { STAGES, type Address, type Order } from "@/lib/orders";

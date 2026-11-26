@@ -56,7 +56,7 @@ export function ConsultBand() {
           <p className="mt-2 max-w-[34rem] text-ink/75">{line}</p>
         </div>
         <div className="flex flex-wrap gap-4">
-          <Link href="/contact" className="btn">{c1} <Icon name="arrow-right" /></Link>
+          <Link href="/consultation" className="btn">{c1} <Icon name="arrow-right" /></Link>
           <Link href="/collections/sarees" className="btn btn-secondary">{c2}</Link>
         </div>
       </div>
