@@ -5,8 +5,8 @@ import SocialLinks from "./SocialLinks";
 
 const cols = [
   { title: "Shop", links: [["All Sarees", "/collections/sarees"], ["All Kurtis", "/collections/kurtis"], ["New Arrivals", "/collections/sarees?sort=new"], ["Bridal Edit", "/collections/sarees?occasion=wedding"], ["Gifting", "/collections/gift-craft"], ["Shop by Weave", "/collections"]] },
-  { title: "RUPAARI", links: [["Our Story", "/about"], ["Our Craft", "/craft"], ["Journal", "/about"]] },
-  { title: "Help", links: [["Contact Us", "/contact"], ["Book a Consultation", "/contact"], ["Track Order", "/account/track"], ["Returns & Refunds", "/account/returns"], ["My Account", "/account"], ["Saree & Kurti Care", "/contact"], ["FAQs", "/contact"]] },
+  { title: "RUPAARI", links: [["Our Story", "/about"], ["Our Craft", "/craft"], ["Journal", "/journal"]] },
+  { title: "Help", links: [["Contact Us", "/contact"], ["Book a Consultation", "/consultation"], ["Track Order", "/account/track"], ["Returns & Refunds", "/account/returns"], ["My Account", "/account"], ["Saree & Kurti Care", "/care"], ["FAQs", "/faq"]] },
 ];
 
 /** Footer used on the collection pages, per the approved design. */
@@ -39,8 +39,8 @@ export default function CollectionsFooter() {
       <Reveal className="cf-legal" delay={120}>
         <p>© 2026 RUPAARI. All rights reserved.</p>
         <p className="cf-pol">
-          <Link href="/contact">Privacy Policy</Link>
-          <Link href="/contact">Terms &amp; Conditions</Link>
+          <Link href="/privacy">Privacy Policy</Link>
+          <Link href="/terms">Terms &amp; Conditions</Link>
         </p>
         <p>India · INR ₹</p>
       </Reveal>

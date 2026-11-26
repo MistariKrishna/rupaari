@@ -16,7 +16,7 @@ const items = [
   { label: "Our Story", href: "/about" },
   { label: "Our Craft", href: "/craft" },
   { label: "Sustainability", href: "/sustainability" },
-  { label: "Consultation", href: "/contact" },
+  { label: "Consultation", href: "/consultation" },
   { label: "Contact", href: "/contact" },
 ];
 

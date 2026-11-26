@@ -16,9 +16,9 @@ export default function SiteFooter() {
       <div>
         <p>© 2026 RUPAARI</p>
         <nav aria-label="Legal">
-          <Link href="/contact">Shipping &amp; returns</Link>
-          <Link href="/contact">Privacy Policy</Link>
-          <Link href="/contact">Terms &amp; Conditions</Link>
+          <Link href="/shipping-returns">Shipping &amp; returns</Link>
+          <Link href="/privacy">Privacy Policy</Link>
+          <Link href="/terms">Terms &amp; Conditions</Link>
         </nav>
         <p>India · INR ₹</p>
       </div>

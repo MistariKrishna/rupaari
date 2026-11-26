@@ -12,7 +12,7 @@ export const site = {
   social: [
     // Paste each page's link between the quotes (WhatsApp: https://wa.me/91XXXXXXXXXX). Icons always show; a link is added once filled.
     { name: "Instagram", icon: "instagram", href: "https://www.instagram.com/therupaari/" },
-    { name: "WhatsApp", icon: "whatsapp", href: "https://wa.me/919427162414" },
+    { name: "WhatsApp", icon: "whatsapp", href: "" },
     { name: "YouTube", icon: "youtube", href: "https://www.youtube.com/channel/UCXKVU9M_hm-h2LotYNQXnOQ" },
     { name: "Facebook", icon: "facebook", href: "https://www.facebook.com/therupaari/" },
     { name: "Pinterest", icon: "pinterest", href: "" },
@@ -132,10 +132,10 @@ export const nav = {
     links: [
       { label: "Our Story", href: "/about" },
       { label: "Our Craft", href: "/craft" },
-      { label: "Journal", href: "/sustainability" },
+      { label: "Journal", href: "/journal" },
     ],
     action: [
-      { label: "Book a Consultation", href: "/contact" },
+      { label: "Book a Consultation", href: "/consultation" },
       { label: "Contact Us", href: "/contact" },
     ],
   },

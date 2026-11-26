@@ -92,7 +92,7 @@ export default function SignupForm() {
           <label className="rp-check au-check au-agree">
             <input type="checkbox" checked={agree} onChange={(e) => { setAgree(e.target.checked); setErr(""); }} />
             <span className="rp-box" aria-hidden="true"><Icon name="check" /></span>
-            <span>I agree to the <Link href="/contact" className="au-small">Terms &amp; Conditions</Link> and <Link href="/contact" className="au-small">Privacy Policy</Link>.</span>
+            <span>I agree to the <Link href="/terms" className="au-small">Terms &amp; Conditions</Link> and <Link href="/privacy" className="au-small">Privacy Policy</Link>.</span>
           </label>
           {err && <p className="rp-err" role="alert"><Icon name="warning" />{err}</p>}
           <button type="submit" className="btn au-btn" disabled={busy}>{busy ? "Sending code…" : <>Create account <Icon name="arrow-right" /></>}</button>

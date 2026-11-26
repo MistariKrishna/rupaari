@@ -23,7 +23,7 @@ export default function AccountHome() {
     { href: "/account/track", icon: "truck" as const, t: "Track an order", d: "See where your saree is, step by step." },
     { href: "/account/returns", icon: "return" as const, t: "Returns and refunds", d: "Request a return on a delivered order." },
     { href: "/wishlist", icon: "heart" as const, t: "Wishlist", d: "Sarees you’ve saved for later." },
-    { href: "/contact", icon: "calendar" as const, t: "Bridal consultation", d: "Book a time with our team." },
+    { href: "/consultation", icon: "calendar" as const, t: "Bridal consultation", d: "Book a time with our team." },
   ];
   return (
     <div className="rp-page">
